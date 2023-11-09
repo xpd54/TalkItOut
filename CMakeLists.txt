@@ -13,19 +13,24 @@ if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
         /opt/homebrew/include/bsoncxx/v_noabi/
         /opt/homebrew/include/
     )
-else()
-    message("Architecture not x86_64")
-    target_include_directories(${PROJECT_NAME} 
+    target_link_directories(${PROJECT_NAME}
+        PRIVATE
+        /opt/homebrew/lib
+    )
+elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
+    message("Architecture is x86_64")
+    target_include_directories(${PROJECT_NAME}
+        PUBLIC
+        include/
         /usr/local/include/mongocxx/v_noabi/ 
         /usr/local/include/bsoncxx/v_noabi/
         /usr/local/include
     )
-endif()
-
-target_link_directories(${PROJECT_NAME}
-    PRIVATE
-    /opt/homebrew/lib
-)
+    target_link_directories(${PROJECT_NAME}
+        PRIVATE
+        /usr/local/lib
+    )
+endif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
