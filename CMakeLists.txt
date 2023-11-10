@@ -31,9 +31,10 @@ elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
         /usr/local/lib
     )
 endif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
-
+add_subdirectory(cpp-dotenv/)
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     mongocxx
     bsoncxx
+    cpp_dotenv
 )
