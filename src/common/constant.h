@@ -1,0 +1,2 @@
+#define MONGO_DB_URI "MONGO_DB_URI"
+#define DB_NAME "DB_NAME"

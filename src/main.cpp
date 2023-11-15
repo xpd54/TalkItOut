@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdint>
+#include <cstdlib>
 #include <vector>
 
 #include <bsoncxx/builder/basic/document.hpp>
@@ -10,6 +11,7 @@
 #include <mongocxx/uri.hpp>
 
 #include "../include/crow.h"
+#include "common/constant.h"
 
 #if defined(NDEBUG) || !defined(assert)
 #undef assert
@@ -28,11 +30,15 @@ using bsoncxx::builder::basic::make_document;
 
 int main(int argc, char *argv[])
 {
+    const char* mongodb_uri = MONGO_DB_URI;
+    
+    char* value;
+    value = getenv(mongodb_uri);
     mongocxx::instance instance{};  // This should be done only once.
-    mongocxx::uri uri("mongodb://localhost:27017");
+    mongocxx::uri uri(value);
     mongocxx::client client(uri);
 
-    auto db = client["mydb"];
+    auto db = client[DB_NAME];
     auto collection = db["test"];
 
     // Create a Document
