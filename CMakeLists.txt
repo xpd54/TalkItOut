@@ -3,6 +3,7 @@ project(Server)
 set(CMAKE_CXX_STANDARD 17)
 add_executable(${PROJECT_NAME} 
     src/main.cpp
+    src/connection/mongo.cpp
 )
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
     message("Architecture is arm64")
