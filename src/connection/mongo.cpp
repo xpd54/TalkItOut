@@ -1,14 +1,15 @@
 #include "mongo.h"
+#include "../common/constant.hpp"
 #include <bsoncxx/builder/stream/document.hpp>
 namespace mongo_connection {
-const char mongodbUri[] = "mongodb://localhost:27017";
-const char databaseName[] = "talk_it_out";
+
 Mongo::Mongo()
-    : uri(mongocxx::uri(mongodbUri)), client(mongocxx::client(uri)),
-      db(client[databaseName]) {}
+    : uri(mongocxx::uri(connection_constant::mongodbUri)),
+      client(mongocxx::client(uri)),
+      db(client[connection_constant::databaseName]) {}
 bool Mongo::AddMarioCharecterToDb(const std::string &charrecter_name,
                                   const int16_t &size, const int16_t &win) {
-  mongocxx::collection collection = Mongo::db["mario"];
+  mongocxx::collection collection = Mongo::db[connection_constant::marioDb];
   auto builder = bsoncxx::builder::stream::document{};
   bsoncxx::document::value doc_to_add =
       builder << "charecterName" << charrecter_name << "size" << size << "wins"

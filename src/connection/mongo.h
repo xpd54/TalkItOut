@@ -1,6 +1,7 @@
 #pragma once
 #include <bsoncxx/json.hpp>
 #include <iostream>
+#pragma once
 #include <mongocxx/client.hpp>
 #include <mongocxx/uri.hpp>
 namespace mongo_connection {
