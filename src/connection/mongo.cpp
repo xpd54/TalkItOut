@@ -6,10 +6,20 @@ namespace mongo_connection {
 Mongo::Mongo()
     : uri(mongocxx::uri(connection_constant::mongodbUri)),
       client(mongocxx::client(uri)),
-      db(client[connection_constant::databaseName]) {}
+      db(client[connection_constant::databaseName]) {
+  std::cout << "Database Initialized"
+            << "\n";
+}
+
+bool setVersion(const mongocxx::database &db) {
+  if (!db.has_collection(db_collection::version)) {
+  }
+}
+
+bool Mongo::checkConnection() {}
 bool Mongo::AddMarioCharecterToDb(const std::string &charrecter_name,
                                   const int16_t &size, const int16_t &win) {
-  mongocxx::collection collection = Mongo::db[connection_constant::marioDb];
+  mongocxx::collection collection = Mongo::db[db_collection::version];
   auto builder = bsoncxx::builder::stream::document{};
   bsoncxx::document::value doc_to_add =
       builder << "charecterName" << charrecter_name << "size" << size << "wins"

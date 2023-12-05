@@ -11,6 +11,7 @@ public:
   Mongo();
   bool AddMarioCharecterToDb(const std::string &charrecter_name,
                              const int16_t &size, const int16_t &win);
+  bool checkConnection();
 
 private:
   mongocxx::uri uri;
