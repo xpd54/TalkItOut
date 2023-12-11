@@ -5,10 +5,13 @@
 #include <iostream>
 namespace mongo_connection {
 
-Mongo::Mongo()
-    : uri(mongocxx::uri(connection_constant::mongodbUri)),
-      client(mongocxx::client(uri)),
-      db(client[connection_constant::databaseName]) {
+Mongo::Mongo() {}
+
+void Mongo::connect() {
+
+  uri = mongocxx::uri(connection_constant::mongodbUri);
+  connection = mongocxx::client(uri);
+  db = connection[connection_constant::databaseName];
   std::cout << "Database Initialized"
             << "\n";
 }
