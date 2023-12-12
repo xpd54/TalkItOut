@@ -10,4 +10,5 @@ const std::string databaseName = "talk_it_out";
 
 namespace db_collection {
 const std::string version("version");
-}
+const std::string appVersion("app_version");
+} // namespace db_collection
