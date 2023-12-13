@@ -16,6 +16,14 @@ void Mongo::connect() {
             << "\n";
 }
 
+bool create_collection(const mongocxx::client &client) {
+  mongocxx::collection new_collection = client["hello"]["There"];
+  auto hello = bsoncxx::builder::basic::make_document(
+      bsoncxx::builder::basic::kvp("hello", "world"));
+  new_collection.insert_one(hello.view());
+  return true;
+}
+
 bool setVersion(const mongocxx::database &db) {
   if (!db.has_collection(db_collection::version)) {
     mongocxx::collection version_collection =
@@ -44,16 +52,17 @@ bool setVersion(const mongocxx::database &db) {
 
 bool Mongo::checkConnection() {
   bool isVersionFound = setVersion(this->db);
+  create_collection(this->client);
   return isVersionFound;
 }
 
-std::string Mongo::signUp(const std::string &user_name, const std::string &password) {
+std::string Mongo::signUp(const std::string &user_name,
+                          const std::string &password) {
   // key for user would be user_name + sha256(password)
   // check if user exist than return user_name
   // if doesn't exist save and return user_name
   // if more than one exists return first user_name, use findOne.
   return "https://github.com/xpd54/TalkItOut/pulls";
 }
-
 
 }; // namespace mongo_connection
