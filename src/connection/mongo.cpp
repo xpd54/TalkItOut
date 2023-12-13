@@ -46,4 +46,14 @@ bool Mongo::checkConnection() {
   bool isVersionFound = setVersion(this->db);
   return isVersionFound;
 }
+
+std::string Mongo::signUp(const std::string &user_name, const std::string &password) {
+  // key for user would be user_name + sha256(password)
+  // check if user exist than return user_name
+  // if doesn't exist save and return user_name
+  // if more than one exists return first user_name, use findOne.
+
+}
+
+
 }; // namespace mongo_connection
