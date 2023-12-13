@@ -52,7 +52,7 @@ std::string Mongo::signUp(const std::string &user_name, const std::string &passw
   // check if user exist than return user_name
   // if doesn't exist save and return user_name
   // if more than one exists return first user_name, use findOne.
-  return " ";
+  return "https://github.com/xpd54/TalkItOut/pulls";
 }
 
 
