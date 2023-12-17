@@ -1,5 +1,6 @@
 #include "mongo.h"
 #include "../common/constant.hpp"
+#include "../entity/user.h"
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include <bsoncxx/json.hpp>
@@ -16,8 +17,8 @@ void Mongo::connect() {
             << "\n";
 }
 
-bool create_collection(const mongocxx::client &client) {
-  mongocxx::collection new_collection = client["hello"]["There"];
+bool create_collection(const mongocxx::database &db) {
+  mongocxx::collection new_collection = db.collection("Hello");
   auto hello = bsoncxx::builder::basic::make_document(
       bsoncxx::builder::basic::kvp("hello", "world"));
   new_collection.insert_one(hello.view());
@@ -52,12 +53,15 @@ bool setVersion(const mongocxx::database &db) {
 
 bool Mongo::checkConnection() {
   bool isVersionFound = setVersion(this->db);
-  create_collection(this->client);
+  create_collection(this->db);
   return isVersionFound;
 }
 
 std::string Mongo::signUp(const std::string &user_name,
                           const std::string &password) {
+  chat_box::User user(user_name, password);
+  user.register_time_stamp = std::chrono::system_clock::now();
+  user.logDetails();
   // key for user would be user_name + sha256(password)
   // check if user exist than return user_name
   // if doesn't exist save and return user_name
