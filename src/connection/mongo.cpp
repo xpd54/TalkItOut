@@ -18,9 +18,11 @@ void Mongo::connect() {
             << "\n";
 }
 
-mongocxx::collection create_collection(const mongocxx::database &db, const std::string &collection_name) {
-  if(!db.has_collection(collection_name)) {
-    std::cout << "collection " << collection_name << " is missing" << "\n";
+mongocxx::collection create_collection(const mongocxx::database &db,
+                                       const std::string &collection_name) {
+  if (!db.has_collection(collection_name)) {
+    std::cout << "collection " << collection_name << " is missing"
+              << "\n";
   }
   return db.collection(collection_name);
 }
@@ -60,17 +62,21 @@ std::string Mongo::signUp(const std::string &user_name,
                           const std::string &password) {
   std::chrono::time_point register_time = std::chrono::system_clock::now();
 
-  mongocxx::collection user_collection = create_collection(db, db_collection::users);
+  mongocxx::collection user_collection =
+      create_collection(db, db_collection::users);
 
   bsoncxx::builder::basic::document doc = bsoncxx::builder::basic::document{};
-  
+
   doc.append(bsoncxx::builder::basic::kvp(user_schema::user_name, user_name));
   doc.append(bsoncxx::builder::basic::kvp(user_schema::password, password));
-  doc.append(bsoncxx::builder::basic::kvp(user_schema::timestamp, bsoncxx::types::b_date(register_time)));
-  
-  bsoncxx::stdx::optional<mongocxx::result::insert_one> result = user_collection.insert_one(doc.view());
+  doc.append(bsoncxx::builder::basic::kvp(
+      user_schema::timestamp, bsoncxx::types::b_date(register_time)));
 
-  std::cout << "Number of Item inserted " << result->result().inserted_count() << "\n";
+  bsoncxx::stdx::optional<mongocxx::result::insert_one> result =
+      user_collection.insert_one(doc.view());
+
+  std::cout << "Number of Item inserted " << result->result().inserted_count()
+            << "\n";
 
   // key for user would be user_name + sha256(password)
   // check if user exist than return user_name
