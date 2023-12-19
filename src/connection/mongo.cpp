@@ -4,6 +4,7 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include <bsoncxx/json.hpp>
+#include <bsoncxx/types.hpp>
 #include <iostream>
 namespace mongo_connection {
 
@@ -17,12 +18,11 @@ void Mongo::connect() {
             << "\n";
 }
 
-bool create_collection(const mongocxx::database &db) {
-  mongocxx::collection new_collection = db.collection("Hello");
-  auto hello = bsoncxx::builder::basic::make_document(
-      bsoncxx::builder::basic::kvp("hello", "world"));
-  new_collection.insert_one(hello.view());
-  return true;
+mongocxx::collection create_collection(const mongocxx::database &db, const std::string &collection_name) {
+  if(!db.has_collection(collection_name)) {
+    std::cout << "collection " << collection_name << " is missing" << "\n";
+  }
+  return db.collection(collection_name);
 }
 
 bool setVersion(const mongocxx::database &db) {
@@ -53,15 +53,25 @@ bool setVersion(const mongocxx::database &db) {
 
 bool Mongo::checkConnection() {
   bool isVersionFound = setVersion(this->db);
-  create_collection(this->db);
   return isVersionFound;
 }
 
 std::string Mongo::signUp(const std::string &user_name,
                           const std::string &password) {
-  chat_box::User user(user_name, password);
-  user.register_time_stamp = std::chrono::system_clock::now();
-  user.logDetails();
+  std::chrono::time_point register_time = std::chrono::system_clock::now();
+
+  mongocxx::collection user_collection = create_collection(db, db_collection::users);
+
+  bsoncxx::builder::basic::document doc = bsoncxx::builder::basic::document{};
+  
+  doc.append(bsoncxx::builder::basic::kvp(user_schema::user_name, user_name));
+  doc.append(bsoncxx::builder::basic::kvp(user_schema::password, password));
+  doc.append(bsoncxx::builder::basic::kvp(user_schema::timestamp, bsoncxx::types::b_date(register_time)));
+  
+  bsoncxx::stdx::optional<mongocxx::result::insert_one> result = user_collection.insert_one(doc.view());
+
+  std::cout << "Number of Item inserted " << result->result().inserted_count() << "\n";
+
   // key for user would be user_name + sha256(password)
   // check if user exist than return user_name
   // if doesn't exist save and return user_name
