@@ -58,31 +58,36 @@ bool Mongo::checkConnection() {
   return isVersionFound;
 }
 
-std::string Mongo::signUp(const std::string &user_name,
-                          const std::string &password) {
-  std::chrono::time_point register_time = std::chrono::system_clock::now();
-
+bsoncxx::stdx::string_view Mongo::signUp(const std::string &user_name,
+                                         const std::string &password) {
+  using bsoncxx::builder::basic::document;
+  using bsoncxx::builder::basic::kvp;
   mongocxx::collection user_collection =
       create_collection(db, db_collection::users);
+  // check for user if exists before signup
+  bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
+      kvp(user_schema::user_name, user_name));
 
-  bsoncxx::builder::basic::document doc = bsoncxx::builder::basic::document{};
+  bsoncxx::stdx::optional<bsoncxx::document::value> user =
+      user_collection.find_one(filter.view());
+  if (user) {
+    bsoncxx::document::view view = user->view();
+    bsoncxx::stdx::string_view current_user =
+        view[user_schema::user_name].get_string().value;
+    std::cout << "found existing " << current_user << "\n";
+    return current_user;
+  }
 
-  doc.append(bsoncxx::builder::basic::kvp(user_schema::user_name, user_name));
-  doc.append(bsoncxx::builder::basic::kvp(user_schema::password, password));
-  doc.append(bsoncxx::builder::basic::kvp(
-      user_schema::timestamp, bsoncxx::types::b_date(register_time)));
+  std::chrono::time_point register_time = std::chrono::system_clock::now();
+  document doc = document{};
+  doc.append(kvp(user_schema::user_name, user_name));
+  doc.append(kvp(user_schema::password, password));
+  doc.append(
+      kvp(user_schema::timestamp, bsoncxx::types::b_date(register_time)));
 
   bsoncxx::stdx::optional<mongocxx::result::insert_one> result =
       user_collection.insert_one(doc.view());
-
-  std::cout << "Number of Item inserted " << result->result().inserted_count()
-            << "\n";
-
-  // key for user would be user_name + sha256(password)
-  // check if user exist than return user_name
-  // if doesn't exist save and return user_name
-  // if more than one exists return first user_name, use findOne.
-  return "https://github.com/xpd54/TalkItOut/pulls";
+  return bsoncxx::stdx::string_view(user_name);
 }
 
 }; // namespace mongo_connection
