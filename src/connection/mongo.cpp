@@ -78,7 +78,8 @@ bsoncxx::stdx::string_view Mongo::signUp(const std::string &user_name,
     return current_user;
   }
 
-  std::chrono::time_point register_time = std::chrono::system_clock::now();
+  std::chrono::system_clock::time_point register_time =
+      std::chrono::system_clock::now();
   document doc = document{};
   doc.append(kvp(user_schema::user_name, user_name));
   doc.append(kvp(user_schema::password, password));
