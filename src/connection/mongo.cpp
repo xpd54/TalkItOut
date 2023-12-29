@@ -1,6 +1,5 @@
 #include "mongo.h"
 #include "../common/constant.hpp"
-#include "../entity/user.h"
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include <bsoncxx/json.hpp>
