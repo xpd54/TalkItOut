@@ -57,8 +57,8 @@ bool Mongo::checkConnection() {
   return isVersionFound;
 }
 
-bsoncxx::stdx::string_view Mongo::signUp(const std::string &user_name,
-                                         const std::string &password) {
+bsoncxx::types::b_string Mongo::signUp(const std::string &user_name,
+                                       const std::string &password) {
   using bsoncxx::builder::basic::document;
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection user_collection =
@@ -87,7 +87,18 @@ bsoncxx::stdx::string_view Mongo::signUp(const std::string &user_name,
 
   bsoncxx::stdx::optional<mongocxx::result::insert_one> result =
       user_collection.insert_one(doc.view());
-  return bsoncxx::stdx::string_view(user_name);
+  return result.get_string();
+}
+
+bsoncxx::oid signIn(const std::string &user_name, const std::string &password) {
+  using bsoncxx::builder::basic::document;
+  using bsoncxx::builder::basic::kvp;
+  mongocxx::collection user_collection =
+      create_collection(db, db_collection::users);
+  bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
+      kvp(user_schema::user_name, user_name));
+  bsoncxx::stdx::optional<bsoncxx::document::value> user =
+      user_collection.find_one(filter.view());
 }
 
 }; // namespace mongo_connection

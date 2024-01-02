@@ -11,8 +11,10 @@ public:
   Mongo();
   void connect();
   bool checkConnection();
-  bsoncxx::stdx::string_view signUp(const std::string &user_name,
-                                    const std::string &passsword);
+  bsoncxx::types::b_string signUp(const std::string &user_name,
+                                  const std::string &passsword);
+  bsoncxx::oid signIn(const std::string &user_name,
+                      const std::string &password);
 
 private:
   mongocxx::uri uri;

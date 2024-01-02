@@ -17,5 +17,5 @@ const std::string users("users");
 namespace user_schema {
 const std::string user_name("user_name");
 const std::string password("password");
-const std::string timestamp("timestamp");
+const std::string timestamp("timestamp") const std::string id("id");
 } // namespace user_schema

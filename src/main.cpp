@@ -10,9 +10,8 @@ int main(int argc, char *argv[]) {
   mongo.connect();
   std::string user_name = "xpd54_hello";
   std::string password = "hellow_kdf@test..";
-  bsoncxx::stdx::string_view user = mongo.signUp(user_name, password);
-  std::cout << user << "\n";
-
+  bsoncxx::types::b_string user = mongo.signUp(user_name, password);
+  std::cout << user.value << "\n";
   bool is_db_connected = mongo.checkConnection();
   is_db_connected ? std::cout << "MongoDb is connected\n"
                   : std::cout << "Mongdb is not connected\n";
