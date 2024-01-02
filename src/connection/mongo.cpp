@@ -57,8 +57,8 @@ bool Mongo::checkConnection() {
   return isVersionFound;
 }
 
-bsoncxx::types::b_string Mongo::signUp(const std::string &user_name,
-                                       const std::string &password) {
+bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name,
+                                    const std::string &password) {
   using bsoncxx::builder::basic::document;
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection user_collection =
@@ -71,10 +71,8 @@ bsoncxx::types::b_string Mongo::signUp(const std::string &user_name,
       user_collection.find_one(filter.view());
   if (user) {
     bsoncxx::document::view view = user->view();
-    bsoncxx::stdx::string_view current_user =
-        view[user_schema::user_name].get_string().value;
-    std::cout << "found existing " << current_user << "\n";
-    return current_user;
+    bsoncxx::types::b_oid current_user_id = view[user_schema::id].get_oid();
+    return current_user_id;
   }
 
   std::chrono::system_clock::time_point register_time =
@@ -87,18 +85,19 @@ bsoncxx::types::b_string Mongo::signUp(const std::string &user_name,
 
   bsoncxx::stdx::optional<mongocxx::result::insert_one> result =
       user_collection.insert_one(doc.view());
-  return result.get_string();
+  return result->inserted_id().get_oid();
 }
 
-bsoncxx::oid signIn(const std::string &user_name, const std::string &password) {
-  using bsoncxx::builder::basic::document;
-  using bsoncxx::builder::basic::kvp;
-  mongocxx::collection user_collection =
-      create_collection(db, db_collection::users);
-  bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
-      kvp(user_schema::user_name, user_name));
-  bsoncxx::stdx::optional<bsoncxx::document::value> user =
-      user_collection.find_one(filter.view());
-}
+// bsoncxx::oid signIn(const std::string &user_name, const std::string
+// &password) {
+//   using bsoncxx::builder::basic::document;
+//   using bsoncxx::builder::basic::kvp;
+//   mongocxx::collection user_collection =
+//       create_collection(db, db_collection::users);
+//   bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
+//       kvp(user_schema::user_name, user_name));
+//   bsoncxx::stdx::optional<bsoncxx::document::value> user =
+//       user_collection.find_one(filter.view());
+// }
 
 }; // namespace mongo_connection

@@ -11,8 +11,8 @@ public:
   Mongo();
   void connect();
   bool checkConnection();
-  bsoncxx::types::b_string signUp(const std::string &user_name,
-                                  const std::string &passsword);
+  bsoncxx::types::b_oid signUp(const std::string &user_name,
+                               const std::string &passsword);
   bsoncxx::oid signIn(const std::string &user_name,
                       const std::string &password);
 
