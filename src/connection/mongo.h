@@ -13,12 +13,14 @@ public:
   bool checkConnection();
   bsoncxx::types::b_oid signUp(const std::string &user_name,
                                const std::string &passsword);
-  bsoncxx::oid signIn(const std::string &user_name,
-                      const std::string &password);
+  bsoncxx::stdx::optional<bsoncxx::types::b_oid>
+  signIn(const std::string &user_name, const std::string &password);
 
 private:
   mongocxx::uri uri;
   mongocxx::client client;
   mongocxx::database db;
+  bsoncxx::stdx::optional<bsoncxx::document::value>
+  findUser(const std::string &user_name, const std::string &password);
 };
 }; // namespace mongo_connection

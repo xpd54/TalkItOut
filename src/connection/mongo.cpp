@@ -57,6 +57,21 @@ bool Mongo::checkConnection() {
   return isVersionFound;
 }
 
+bsoncxx::stdx::optional<bsoncxx::document::value>
+Mongo::findUser(const std::string &user_name, const std::string &password) {
+  using bsoncxx::builder::basic::document;
+  using bsoncxx::builder::basic::kvp;
+  mongocxx::collection user_collection =
+      create_collection(db, db_collection::users);
+  // check for user if exists before signup
+  bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
+      kvp(user_schema::user_name, user_name));
+
+  bsoncxx::stdx::optional<bsoncxx::document::value> user =
+      user_collection.find_one(filter.view());
+  return user;
+}
+
 bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name,
                                     const std::string &password) {
   using bsoncxx::builder::basic::document;
@@ -88,16 +103,17 @@ bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name,
   return result->inserted_id().get_oid();
 }
 
-// bsoncxx::oid signIn(const std::string &user_name, const std::string
-// &password) {
-//   using bsoncxx::builder::basic::document;
-//   using bsoncxx::builder::basic::kvp;
-//   mongocxx::collection user_collection =
-//       create_collection(db, db_collection::users);
-//   bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
-//       kvp(user_schema::user_name, user_name));
-//   bsoncxx::stdx::optional<bsoncxx::document::value> user =
-//       user_collection.find_one(filter.view());
-// }
+bsoncxx::stdx::optional<bsoncxx::types::b_oid>
+Mongo::signIn(const std::string &user_name, const std::string &password) {
+  bsoncxx::stdx::optional<bsoncxx::document::value> user =
+      findUser(user_name, password);
+  if (user) {
+    bsoncxx::document::view view = user->view();
+    bsoncxx::types::b_oid current_user_id = view[user_schema::id].get_oid();
+    return current_user_id;
+  }
+
+  return bsoncxx::stdx::nullopt;
+}
 
 }; // namespace mongo_connection
