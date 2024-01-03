@@ -18,5 +18,5 @@ namespace user_schema {
 const std::string user_name("user_name");
 const std::string password("password");
 const std::string timestamp("timestamp");
-const std::string id("id");
+const std::string id("_id");
 } // namespace user_schema
