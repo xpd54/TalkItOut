@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
   std::string password = "hellow_kdf@test..";
   bsoncxx::stdx::optional<bsoncxx::types::b_oid> user =
       mongo.signIn(user_name, password);
-  std::cout << user.value.to_string();
+  std::cout << user->value.to_string() << "\n";
   bool is_db_connected = mongo.checkConnection();
   is_db_connected ? std::cout << "MongoDb is connected\n"
                   : std::cout << "Mongdb is not connected\n";
