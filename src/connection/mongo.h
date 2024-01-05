@@ -1,4 +1,5 @@
 #pragma once
+#include <bsoncxx/types.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/stdx.hpp>
@@ -15,8 +16,8 @@ public:
                                const std::string &passsword);
   bsoncxx::stdx::optional<bsoncxx::types::b_oid>
   signIn(const std::string &user_name, const std::string &password);
-  bsoncxx::type::b_oid find_a_room(const bsoncxx::type::b_oid &from,
-                                   cosnt bsoncxx::type::b_oid &to);
+  bsoncxx::types::b_oid find_a_room(const bsoncxx::types::b_oid &from,
+                                    const bsoncxx::types::b_oid &to);
 
 private:
   mongocxx::uri uri;
