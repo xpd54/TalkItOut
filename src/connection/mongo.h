@@ -15,6 +15,8 @@ public:
                                const std::string &passsword);
   bsoncxx::stdx::optional<bsoncxx::types::b_oid>
   signIn(const std::string &user_name, const std::string &password);
+  bsoncxx::type::b_oid find_a_room(const bsoncxx::type::b_oid &from,
+                                   cosnt bsoncxx::type::b_oid &to);
 
 private:
   mongocxx::uri uri;
