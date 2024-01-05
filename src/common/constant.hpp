@@ -11,4 +11,12 @@ const std::string databaseName = "talk_it_out";
 namespace db_collection {
 const std::string version("version");
 const std::string appVersion("app_version");
+const std::string users("users");
 } // namespace db_collection
+
+namespace user_schema {
+const std::string user_name("user_name");
+const std::string password("password");
+const std::string timestamp("timestamp");
+const std::string id("_id");
+} // namespace user_schema

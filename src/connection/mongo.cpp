@@ -3,6 +3,7 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include <bsoncxx/json.hpp>
+#include <bsoncxx/types.hpp>
 #include <iostream>
 namespace mongo_connection {
 
@@ -14,6 +15,15 @@ void Mongo::connect() {
   db = client[connection_constant::databaseName];
   std::cout << "Database Initialized"
             << "\n";
+}
+
+mongocxx::collection create_collection(const mongocxx::database &db,
+                                       const std::string &collection_name) {
+  if (!db.has_collection(collection_name)) {
+    std::cout << "collection " << collection_name << " is missing"
+              << "\n";
+  }
+  return db.collection(collection_name);
 }
 
 bool setVersion(const mongocxx::database &db) {
@@ -47,13 +57,63 @@ bool Mongo::checkConnection() {
   return isVersionFound;
 }
 
-std::string Mongo::signUp(const std::string &user_name, const std::string &password) {
-  // key for user would be user_name + sha256(password)
-  // check if user exist than return user_name
-  // if doesn't exist save and return user_name
-  // if more than one exists return first user_name, use findOne.
-  return "https://github.com/xpd54/TalkItOut/pulls";
+bsoncxx::stdx::optional<bsoncxx::document::value>
+Mongo::findUser(const std::string &user_name, const std::string &password) {
+  using bsoncxx::builder::basic::document;
+  using bsoncxx::builder::basic::kvp;
+  mongocxx::collection user_collection =
+      create_collection(db, db_collection::users);
+  // check for user if exists before signup
+  bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
+      kvp(user_schema::user_name, user_name));
+
+  bsoncxx::stdx::optional<bsoncxx::document::value> user =
+      user_collection.find_one(filter.view());
+  return user;
 }
 
+bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name,
+                                    const std::string &password) {
+  using bsoncxx::builder::basic::document;
+  using bsoncxx::builder::basic::kvp;
+  mongocxx::collection user_collection =
+      create_collection(db, db_collection::users);
+  // check for user if exists before signup
+  bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
+      kvp(user_schema::user_name, user_name));
+
+  bsoncxx::stdx::optional<bsoncxx::document::value> user =
+      user_collection.find_one(filter.view());
+  if (user) {
+    bsoncxx::document::view view = user->view();
+    bsoncxx::types::b_oid current_user_id = view[user_schema::id].get_oid();
+    return current_user_id;
+  }
+
+  std::chrono::system_clock::time_point register_time =
+      std::chrono::system_clock::now();
+  document doc = document{};
+  doc.append(kvp(user_schema::user_name, user_name));
+  doc.append(kvp(user_schema::password, password));
+  doc.append(
+      kvp(user_schema::timestamp, bsoncxx::types::b_date(register_time)));
+
+  bsoncxx::stdx::optional<mongocxx::result::insert_one> result =
+      user_collection.insert_one(doc.view());
+  return result->inserted_id().get_oid();
+}
+
+bsoncxx::stdx::optional<bsoncxx::types::b_oid>
+Mongo::signIn(const std::string &user_name, const std::string &password) {
+  bsoncxx::stdx::optional<bsoncxx::document::value> user =
+      findUser(user_name, password);
+  if (user) {
+    bsoncxx::document::view view = user->view();
+    bsoncxx::types::b_oid current_user_id = view[user_schema::id].get_oid();
+    return current_user_id;
+  }
+
+  return bsoncxx::stdx::nullopt;
+}
 
 }; // namespace mongo_connection
