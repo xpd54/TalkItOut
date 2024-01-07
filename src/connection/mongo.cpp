@@ -72,6 +72,28 @@ Mongo::findUser(const std::string &user_name, const std::string &password) {
   return user;
 }
 
+mongocxx::cursor Mongo::find_rooms(const std::string &room_name) {
+  using bsoncxx::builder::basic::document;
+  using bsoncxx::builder::basic::kvp;
+  mongocxx::collection room_collection =
+      create_collection(db, db_collection::rooms);
+  bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
+      kvp(room_schema::room_name, room_name));
+  mongocxx::cursor room = room_collection.find(filter.view());
+}
+
+bsoncxx::stdx::optional<bsoncxx::document::value>
+Mongo::find_a_room(const bsoncxx::types::b_oid &roomId) {
+  using bsoncxx::builder::basic::document;
+  using bsoncxx::builder::basic::kvp;
+  mongocxx::collection room_collction =
+      create_collection(db, db_collection::rooms);
+  bsoncxx::document::value filter =
+      bsoncxx::builder::basic::make_document(kvp(room_schema::id, roomId));
+  bsoncxx::stdx::optional<bsoncxx::document::value> room =
+      room_collction.find_one(filter.view());
+}
+
 bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name,
                                     const std::string &password) {
   using bsoncxx::builder::basic::document;
@@ -115,5 +137,17 @@ Mongo::signIn(const std::string &user_name, const std::string &password) {
 
   return bsoncxx::stdx::nullopt;
 }
+
+bsoncxx::types::b_oid create_a_room(const std::string &room_name,
+                                    const bsoncxx::types::b_oid &userId) {
+  // find_rooms with name
+  // if found use name with appending last room version + 1
+  // add userId into members of the room
+  // add newly created room _id into user rooms list
+  // return newly created room _id
+}
+
+bool join_a_room(const bsoncxx::types::b_oid &userId) {}
+bool exit_a_room(const bsoncxx::types::b_oid &userId) {}
 
 }; // namespace mongo_connection

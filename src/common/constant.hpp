@@ -12,6 +12,7 @@ namespace db_collection {
 const std::string version("version");
 const std::string appVersion("app_version");
 const std::string users("users");
+const std::string rooms("rooms");
 } // namespace db_collection
 
 namespace user_schema {
@@ -20,3 +21,12 @@ const std::string password("password");
 const std::string timestamp("timestamp");
 const std::string id("_id");
 } // namespace user_schema
+
+namespace room_schema {
+const std::string room_name("room_name");
+const std::string id("_id");
+const std::string created_at("created_at");
+const std::string updated_at("updated_at");
+const std::string members("members");
+const std::string messages("messages");
+} // namespace room_schema
