@@ -59,7 +59,7 @@ bool Mongo::checkConnection() {
 
 bsoncxx::stdx::optional<bsoncxx::document::value>
 Mongo::findUser(const std::string &user_name, const std::string &password) {
-  using bsoncxx::builder::basic::document;
+
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection user_collection =
       create_collection(db, db_collection::users);
@@ -73,7 +73,6 @@ Mongo::findUser(const std::string &user_name, const std::string &password) {
 }
 
 mongocxx::cursor Mongo::find_rooms(const std::string &room_name) {
-  using bsoncxx::builder::basic::document;
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection room_collection =
       create_collection(db, db_collection::rooms);
@@ -84,7 +83,6 @@ mongocxx::cursor Mongo::find_rooms(const std::string &room_name) {
 
 bsoncxx::stdx::optional<bsoncxx::document::value>
 Mongo::find_a_room(const bsoncxx::types::b_oid &roomId) {
-  using bsoncxx::builder::basic::document;
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection room_collction =
       create_collection(db, db_collection::rooms);
@@ -138,9 +136,30 @@ Mongo::signIn(const std::string &user_name, const std::string &password) {
   return bsoncxx::stdx::nullopt;
 }
 
-bsoncxx::types::b_oid create_a_room(const std::string &room_name,
-                                    const bsoncxx::types::b_oid &userId) {
-  // find_rooms with name
+bsoncxx::types::b_oid
+Mongo::create_a_room(const std::string &room_name,
+                     const bsoncxx::types::b_oid &userId) {
+  using bsoncxx::builder::basic::document;
+  using bsoncxx::builder::basic::kvp;
+  mongocxx::cursor rooms = find_rooms(room_name);
+  int32_t name_version = 0;
+  if (rooms.begin() != rooms.end()) {
+    for (const bsoncxx::document::view &room : rooms) {
+      if (room[room_schema::name_version].get_int32() > name_version) {
+        name_version = room[room_schema::name_version].get_int32();
+      }
+    }
+  }
+
+  document doc = {};
+  std::vector<bsoncxx::types::b_oid> users;
+  users.push_back(userId);
+  doc.append(kvp(room_schema::room_name, room_name));
+  doc.append(kvp(room_schema::name_version, name_version));
+  std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+  doc.append(kvp(room_schema::created_at, bsoncxx::types::b_date(now)));
+  doc.append(kvp(room_schema::updated_at, bsoncxx::types::b_date(now)));
+  doc.append(kvp(room_schema::members, users));
   // if found use name with appending last room version + 1
   // add userId into members of the room
   // add newly created room _id into user rooms list

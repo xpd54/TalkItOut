@@ -23,8 +23,9 @@ const std::string id("_id");
 } // namespace user_schema
 
 namespace room_schema {
-const std::string room_name("room_name");
 const std::string id("_id");
+const std::string room_name("room_name");
+const std::string name_version("name_version");
 const std::string created_at("created_at");
 const std::string updated_at("updated_at");
 const std::string members("members");
