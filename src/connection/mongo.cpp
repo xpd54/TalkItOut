@@ -155,15 +155,15 @@ Mongo::create_a_room(const std::string &room_name,
   std::vector<bsoncxx::types::b_oid> users;
   users.push_back(userId);
   doc.append(kvp(room_schema::room_name, room_name));
-  doc.append(kvp(room_schema::name_version, name_version));
+  doc.append(kvp(room_schema::name_version, name_version++));
   std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
   doc.append(kvp(room_schema::created_at, bsoncxx::types::b_date(now)));
   doc.append(kvp(room_schema::updated_at, bsoncxx::types::b_date(now)));
   doc.append(kvp(room_schema::members, users));
-  // if found use name with appending last room version + 1
-  // add userId into members of the room
+  bsoncxx::stdx::optional<mongocxx::result::insert_one> result =
+      room_collction.insert_one(doc.view());
   // add newly created room _id into user rooms list
-  // return newly created room _id
+  return result->inserted_id().get_oid();
 }
 
 bool join_a_room(const bsoncxx::types::b_oid &userId) {}
