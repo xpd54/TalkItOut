@@ -1,7 +1,7 @@
 #include "mongo.h"
 #include "../common/constant.hpp"
+#include <bsoncxx/builder/basic/array.hpp>
 #include <bsoncxx/builder/basic/document.hpp>
-#include <bsoncxx/builder/basic/kvp.hpp>
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/types.hpp>
 #include <iostream>
@@ -152,16 +152,19 @@ Mongo::create_a_room(const std::string &room_name,
   }
 
   document doc = {};
-  std::vector<bsoncxx::types::b_oid> users;
-  users.push_back(userId);
+  bsoncxx::builder::basic::array users;
+  users.append(userId);
   doc.append(kvp(room_schema::room_name, room_name));
   doc.append(kvp(room_schema::name_version, name_version++));
   std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
   doc.append(kvp(room_schema::created_at, bsoncxx::types::b_date(now)));
   doc.append(kvp(room_schema::updated_at, bsoncxx::types::b_date(now)));
   doc.append(kvp(room_schema::members, users));
+
+  mongocxx::collection room_collection =
+      create_collection(db, db_collection::rooms);
   bsoncxx::stdx::optional<mongocxx::result::insert_one> result =
-      room_collction.insert_one(doc.view());
+      room_collection.insert_one(doc.view());
   // add newly created room _id into user rooms list
   return result->inserted_id().get_oid();
 }
