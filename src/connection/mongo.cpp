@@ -79,6 +79,7 @@ mongocxx::cursor Mongo::find_rooms(const std::string &room_name) {
   bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
       kvp(room_schema::room_name, room_name));
   mongocxx::cursor room = room_collection.find(filter.view());
+  return room;
 }
 
 bsoncxx::stdx::optional<bsoncxx::document::value>
