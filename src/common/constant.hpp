@@ -20,6 +20,7 @@ const std::string user_name("user_name");
 const std::string password("password");
 const std::string timestamp("timestamp");
 const std::string id("_id");
+const std::string chat_rooms("chat_rooms");
 } // namespace user_schema
 
 namespace room_schema {
