@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
       mongo.signIn(user_name, password);
   std::cout << user->value.to_string() << "\n";
   if (user) {
-    mongo.create_a_room("ravi", user.value());
+    mongo.create_a_room("weekend plans", user.value());
   }
   bool is_db_connected = mongo.checkConnection();
   is_db_connected ? std::cout << "MongoDb is connected\n"

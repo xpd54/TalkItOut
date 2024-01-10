@@ -146,7 +146,7 @@ Mongo::create_a_room(const std::string &room_name,
   int32_t name_version = 0;
   if (rooms.begin() != rooms.end()) {
     for (const bsoncxx::document::view &room : rooms) {
-      if (room[room_schema::name_version].get_int32() > name_version) {
+      if (room[room_schema::name_version].get_int32() >= name_version) {
         name_version = room[room_schema::name_version].get_int32();
       }
     }
@@ -156,12 +156,11 @@ Mongo::create_a_room(const std::string &room_name,
   bsoncxx::builder::basic::array users;
   users.append(userId);
   doc.append(kvp(room_schema::room_name, room_name));
-  doc.append(kvp(room_schema::name_version, name_version++));
+  doc.append(kvp(room_schema::name_version, ++name_version));
   std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
   doc.append(kvp(room_schema::created_at, bsoncxx::types::b_date(now)));
   doc.append(kvp(room_schema::updated_at, bsoncxx::types::b_date(now)));
   doc.append(kvp(room_schema::members, users));
-
   mongocxx::collection room_collection =
       create_collection(db, db_collection::rooms);
   bsoncxx::stdx::optional<mongocxx::result::insert_one> result =
