@@ -91,6 +91,7 @@ Mongo::find_a_room(const bsoncxx::types::b_oid &roomId) {
       bsoncxx::builder::basic::make_document(kvp(room_schema::id, roomId));
   bsoncxx::stdx::optional<bsoncxx::document::value> room =
       room_collction.find_one(filter.view());
+  return room;
 }
 
 bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name,
@@ -169,7 +170,7 @@ Mongo::create_a_room(const std::string &room_name,
   return result->inserted_id().get_oid();
 }
 
-bool join_a_room(const bsoncxx::types::b_oid &userId) {}
-bool exit_a_room(const bsoncxx::types::b_oid &userId) {}
+bool join_a_room(const bsoncxx::types::b_oid &userId) { return true; }
+bool exit_a_room(const bsoncxx::types::b_oid &userId) { return true; }
 
 }; // namespace mongo_connection
