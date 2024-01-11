@@ -168,22 +168,24 @@ Mongo::create_a_room(const std::string &room_name,
       room_collection.insert_one(doc.view());
 
   if (result) {
-    join_a_room(result->inserted_id().get_oid(), user_id);
+    int32_t count = join_a_room(result->inserted_id().get_oid(), user_id);
+    std::cout << "room joined " << count << '\n';
   }
   return result->inserted_id().get_oid();
 }
 
-bool Mongo::join_a_room(const bsoncxx::types::b_oid &chat_room_id,
-                        const bsoncxx::types::b_oid &user_id) {
+int32_t Mongo::join_a_room(const bsoncxx::types::b_oid &chat_room_id,
+                           const bsoncxx::types::b_oid &user_id) {
   mongocxx::collection user_collection =
       create_collection(db, db_collection::users);
   using bsoncxx::builder::basic::kvp;
   using bsoncxx::builder::basic::make_document;
-  user_collection.update_one(
-      make_document(kvp(user_schema::id, user_id)),
-      make_document(kvp(
-          "$push", make_document(kvp(user_schema::chat_rooms, chat_room_id)))));
-  return true;
+  bsoncxx::stdx::optional<mongocxx::result::update> update =
+      user_collection.update_one(
+          make_document(kvp(user_schema::id, user_id)),
+          make_document(kvp("$push", make_document(kvp(user_schema::chat_rooms,
+                                                       chat_room_id)))));
+  return update->matched_count();
 }
 bool exit_a_room(const bsoncxx::types::b_oid &userId) { return true; }
 
