@@ -19,7 +19,8 @@ public:
   // pass
   bsoncxx::types::b_oid create_a_room(const std::string &room_name,
                                       const bsoncxx::types::b_oid &userId);
-  bool join_a_room(const bsoncxx::types::b_oid &roomId);
+  bool join_a_room(const bsoncxx::types::b_oid &chat_room_id,
+                   const bsoncxx::types::b_oid &user_id);
   bool exit_a_room(const bsoncxx::types::b_oid &roomId);
 
 private:
