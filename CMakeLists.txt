@@ -7,6 +7,7 @@ add_executable(${PROJECT_NAME}
     src/entity/user.cpp
     src/entity/message.cpp
     src/router/health.cpp
+    src/router/signup.cpp
 )
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
     message("Architecture is arm64")
