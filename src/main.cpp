@@ -21,5 +21,7 @@ int main(int argc, char *argv[]) {
                   : std::cout << "Mongdb is not connected\n";
   crow::SimpleApp app;
   CROW_ROUTE(app, "/")([]() { return "Hello world"; });
+  CROW_ROUTE(app, "/signup")([]() { return "You got signed up"; });
+  CROW_ROUTE(app, "/signin")([]() { return "you are signed in"; });
   app.port(18080).multithreaded().run();
 }
