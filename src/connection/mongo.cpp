@@ -52,7 +52,7 @@ bool setVersion(const mongocxx::database &db) {
   return false;
 }
 
-bool Mongo::checkConnection() {
+bool Mongo::checkConnection() const {
   bool isVersionFound = setVersion(this->db);
   return isVersionFound;
 }

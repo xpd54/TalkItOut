@@ -1,4 +1,5 @@
 #include "../include/crow.h"
+#include "./router/health.h"
 #include "connection/mongo.h"
 #include <iostream>
 int main(int argc, char *argv[]) {
@@ -16,10 +17,17 @@ int main(int argc, char *argv[]) {
   if (user) {
     mongo.create_a_room("weekend plans", user.value());
   }
-  bool is_db_connected = mongo.checkConnection();
-  is_db_connected ? std::cout << "MongoDb is connected\n"
-                  : std::cout << "Mongdb is not connected\n";
+
   crow::SimpleApp app;
-  CROW_ROUTE(app, "/")([]() { return "Hello world"; });
+
+  route::Health health;
+  /*Capture of lambdas is by reference avoid copy of object*/
+  CROW_ROUTE(app, "/health")
+  ([&health, &mongo]() {
+    crow::json::wvalue res = health.health_check(mongo);
+    return crow::response(200, res);
+  });
+  CROW_ROUTE(app, "/signup")([]() { return "You got signed up"; });
+  CROW_ROUTE(app, "/signin")([]() { return "you are signed in"; });
   app.port(18080).multithreaded().run();
 }
