@@ -6,6 +6,7 @@ add_executable(${PROJECT_NAME}
     src/connection/mongo.cpp
     src/entity/user.cpp
     src/entity/message.cpp
+    src/router/health.cpp
 )
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
     message("Architecture is arm64")
