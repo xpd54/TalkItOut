@@ -23,7 +23,10 @@ int main(int argc, char *argv[]) {
   route::Health health;
   /*Capture of lambdas is by reference avoid copy of object*/
   CROW_ROUTE(app, "/health")
-  ([&health, &mongo]() { return health.health_check(mongo); });
+  ([&health, &mongo]() {
+    crow::json::wvalue res = health.health_check(mongo);
+    return crow::response(200, res);
+  });
   CROW_ROUTE(app, "/signup")([]() { return "You got signed up"; });
   CROW_ROUTE(app, "/signin")([]() { return "you are signed in"; });
   app.port(18080).multithreaded().run();
