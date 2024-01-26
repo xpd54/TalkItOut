@@ -95,7 +95,7 @@ Mongo::find_a_room(const bsoncxx::types::b_oid &roomId) {
 }
 
 bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name,
-                                    const std::string &password) {
+                                    const std::string &password) const {
   using bsoncxx::builder::basic::document;
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection user_collection =
