@@ -1,5 +1,6 @@
 #include "../include/crow.h"
 #include "./router/health.h"
+#include "./router/signup.h"
 #include "connection/mongo.h"
 #include <iostream>
 int main(int argc, char *argv[]) {
@@ -27,6 +28,13 @@ int main(int argc, char *argv[]) {
     crow::json::wvalue res = health.health_check(mongo);
     return crow::response(200, res);
   });
+
+  route::Signup signup;
+  CROW_ROUTE(app, "/signup")
+  ([&signup, &mongo]() {
+    
+  });
+
   CROW_ROUTE(app, "/signup")([]() { return "You got signed up"; });
   CROW_ROUTE(app, "/signin")([]() { return "you are signed in"; });
   app.port(18080).multithreaded().run();
