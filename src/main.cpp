@@ -1,4 +1,5 @@
 #include "../include/crow.h"
+#include "./entity/user.h"
 #include "./router/health.h"
 #include "./router/signup.h"
 #include "connection/mongo.h"
@@ -29,11 +30,15 @@ int main(int argc, char *argv[]) {
     return crow::response(200, res);
   });
 
-  route::Signup signup;
+  route::Signup signup_module;
   CROW_ROUTE(app, "/signup")
-  ([&signup, &mongo]() {
-    
-  });
+      .methods(crow::HTTPMethod::Post)(
+          [&signup_module, &mongo](const std::string &user_name,
+                                   const std::string &password) {
+            chat_box::User user(user_name, password);
+            crow::json::wvalue res = signup_module.sign_up(mongo, user);
+            return crow::response(200, res);
+          });
 
   CROW_ROUTE(app, "/signup")([]() { return "You got signed up"; });
   CROW_ROUTE(app, "/signin")([]() { return "you are signed in"; });
