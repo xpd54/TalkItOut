@@ -157,6 +157,7 @@ Mongo::create_a_room(const std::string &room_name,
   bsoncxx::builder::basic::array users;
   users.append(user_id);
   doc.append(kvp(room_schema::room_name, room_name));
+  // If name_version if room is found get next name_version
   doc.append(kvp(room_schema::name_version, ++name_version));
   std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
   doc.append(kvp(room_schema::created_at, bsoncxx::types::b_date(now)));
@@ -168,6 +169,7 @@ Mongo::create_a_room(const std::string &room_name,
       room_collection.insert_one(doc.view());
 
   if (result) {
+    // after saving a room do join the room as using
     int32_t count = join_a_room(result->inserted_id().get_oid(), user_id);
     std::cout << "room joined " << count << '\n';
   }
@@ -180,6 +182,7 @@ int32_t Mongo::join_a_room(const bsoncxx::types::b_oid &chat_room_id,
       create_collection(db, db_collection::users);
   using bsoncxx::builder::basic::kvp;
   using bsoncxx::builder::basic::make_document;
+  // update users chat_rooms list
   bsoncxx::stdx::optional<mongocxx::result::update> update =
       user_collection.update_one(
           make_document(kvp(user_schema::id, user_id)),
