@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.26)
 project(Server)
 set(CMAKE_CXX_STANDARD 17)
-add_executable(${PROJECT_NAME} 
-    src/main.cpp
-    src/connection/mongo.cpp
-    src/entity/user.cpp
-    src/entity/message.cpp
-    src/router/health.cpp
-    src/router/signup.cpp
+file(GLOB talk_out_src
+    "src/common/*.hpp"
+    "src/connection/*.cpp"
+    "src/entity/*.cpp"
+    "src/router/*.cpp"
+    "src/*.cpp"
 )
+add_executable(${PROJECT_NAME} 
+    ${talk_out_src}
+)
+
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
     message("Architecture is arm64")
     target_include_directories(${PROJECT_NAME} 
