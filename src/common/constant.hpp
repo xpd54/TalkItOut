@@ -33,3 +33,8 @@ const std::string updated_at("updated_at");
 const std::string members("members");
 const std::string messages("messages");
 } // namespace room_schema
+
+namespace response_key {
+const std::string status("status");
+const std::string user_id("user_id");
+} // namespace response_key

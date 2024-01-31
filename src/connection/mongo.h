@@ -13,7 +13,7 @@ public:
   void connect();
   bool checkConnection() const;
   bsoncxx::types::b_oid signUp(const std::string &user_name,
-                               const std::string &passsword);
+                               const std::string &passsword) const;
   bsoncxx::stdx::optional<bsoncxx::types::b_oid>
   signIn(const std::string &user_name, const std::string &password);
   // pass
