@@ -38,3 +38,8 @@ namespace response_key {
 const std::string status("status");
 const std::string user_id("user_id");
 } // namespace response_key
+
+namespace response_value {
+const std::string success("success");
+const std::string not_found("not_found");
+} // namespace response_value

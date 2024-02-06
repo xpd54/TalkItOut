@@ -58,7 +58,8 @@ bool Mongo::checkConnection() const {
 }
 
 bsoncxx::stdx::optional<bsoncxx::document::value>
-Mongo::findUser(const std::string &user_name, const std::string &password) {
+Mongo::findUser(const std::string &user_name,
+                const std::string &password) const {
 
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection user_collection =
@@ -126,7 +127,7 @@ bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name,
 }
 
 bsoncxx::stdx::optional<bsoncxx::types::b_oid>
-Mongo::signIn(const std::string &user_name, const std::string &password) {
+Mongo::signIn(const std::string &user_name, const std::string &password) const {
   bsoncxx::stdx::optional<bsoncxx::document::value> user =
       findUser(user_name, password);
   if (user) {
