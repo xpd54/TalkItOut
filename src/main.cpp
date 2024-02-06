@@ -29,11 +29,9 @@ int main(int argc, char *argv[]) {
       .methods(crow::HTTPMethod::Post)(
           [&signup_module, &mongo](const crow::request &req) {
             crow::json::rvalue body = crow::json::load(req.body);
-            const std::string user_name = body[user_schema::user_name].s();
-            const std::string password = body[user_schema::password].s();
-            chat_box::User user(user_name, password);
-            crow::json::wvalue res = signup_module.sign_up(mongo, user);
-            return crow::response(201, res);
+            chat_box::User user(body[user_schema::user_name].s(),
+                                body[user_schema::password].s());
+            return signup_module.sign_up(mongo, user);
           });
 
   route::Signin signin_module;
