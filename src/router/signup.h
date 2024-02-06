@@ -7,8 +7,8 @@ class Signup {
 private:
   /* data */
 public:
-  crow::json::wvalue sign_up(const mongo_connection::Mongo &mongo,
-                             const chat_box::User &user) const;
+  crow::response sign_up(const mongo_connection::Mongo &mongo,
+                         const chat_box::User &user) const;
 };
 
 } // namespace route

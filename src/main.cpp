@@ -19,21 +19,16 @@ int main(int argc, char *argv[]) {
   route::Health health;
   /*Capture of lambdas is by reference avoid copy of object*/
   CROW_ROUTE(app, "/health")
-  ([&health, &mongo]() {
-    crow::json::wvalue res = health.health_check(mongo);
-    return crow::response(200, res);
-  });
+  ([&health, &mongo]() { return health.health_check(mongo); });
 
   route::Signup signup_module;
   CROW_ROUTE(app, "/signup")
       .methods(crow::HTTPMethod::Post)(
           [&signup_module, &mongo](const crow::request &req) {
             crow::json::rvalue body = crow::json::load(req.body);
-            const std::string user_name = body[user_schema::user_name].s();
-            const std::string password = body[user_schema::password].s();
-            chat_box::User user(user_name, password);
-            crow::json::wvalue res = signup_module.sign_up(mongo, user);
-            return crow::response(201, res);
+            chat_box::User user(body[user_schema::user_name].s(),
+                                body[user_schema::password].s());
+            return signup_module.sign_up(mongo, user);
           });
 
   route::Signin signin_module;
@@ -43,8 +38,7 @@ int main(int argc, char *argv[]) {
             crow::json::rvalue body = crow::json::load(req.body);
             chat_box::User user(body[user_schema::user_name].s(),
                                 body[user_schema::password].s());
-            crow::response res = signin_module.sing_in(mongo, user);
-            return res;
+            return signin_module.sing_in(mongo, user);
           });
   app.port(18080).multithreaded().run();
 }

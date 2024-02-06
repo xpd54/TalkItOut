@@ -5,7 +5,7 @@
 namespace route {
 class Health {
 public:
-  crow::json::wvalue health_check(const mongo_connection::Mongo &mongo) const;
+  crow::response health_check(const mongo_connection::Mongo &mongo) const;
 };
 
 }; // namespace route
