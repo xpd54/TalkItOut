@@ -18,7 +18,7 @@ public:
   signIn(const std::string &user_name, const std::string &password) const;
   // pass
   bsoncxx::types::b_oid create_a_room(const std::string &room_name,
-                                      const bsoncxx::types::b_oid &userId);
+                                      const bsoncxx::types::b_oid &userId) const;
   int32_t join_a_room(const bsoncxx::types::b_oid &chat_room_id,
                       const bsoncxx::types::b_oid &user_id);
   bool exit_a_room(const bsoncxx::types::b_oid &roomId);

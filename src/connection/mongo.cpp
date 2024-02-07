@@ -141,7 +141,7 @@ Mongo::signIn(const std::string &user_name, const std::string &password) const {
 
 bsoncxx::types::b_oid
 Mongo::create_a_room(const std::string &room_name,
-                     const bsoncxx::types::b_oid &user_id) {
+                     const bsoncxx::types::b_oid &user_id) const {
   using bsoncxx::builder::basic::document;
   using bsoncxx::builder::basic::kvp;
   mongocxx::cursor rooms = find_rooms(room_name);

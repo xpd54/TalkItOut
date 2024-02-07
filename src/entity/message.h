@@ -7,8 +7,9 @@ class Message {
 private:
   /* data */
 public:
-  Message(const std::string &payload, const bsoncxx::oid &user_id,
-          const bsoncxx::oid &chat_room_id);
+  Message(const bsoncxx::oid &message_id, const std::string &payload,
+          const bsoncxx::oid &user_id, const bsoncxx::oid &chat_room_id);
+  bsoncxx::oid message_id;
   std::string payload;
   bsoncxx::oid user_id;
   bsoncxx::oid chat_room_id;
