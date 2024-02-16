@@ -73,7 +73,7 @@ Mongo::findUser(const std::string &user_name,
   return user;
 }
 
-mongocxx::cursor Mongo::find_rooms(const std::string &room_name) {
+mongocxx::cursor Mongo::find_rooms(const std::string &room_name) const {
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection room_collection =
       create_collection(db, db_collection::rooms);
@@ -178,7 +178,7 @@ Mongo::create_a_room(const std::string &room_name,
 }
 
 int32_t Mongo::join_a_room(const bsoncxx::types::b_oid &chat_room_id,
-                           const bsoncxx::types::b_oid &user_id) {
+                           const bsoncxx::types::b_oid &user_id) const {
   mongocxx::collection user_collection =
       create_collection(db, db_collection::users);
   using bsoncxx::builder::basic::kvp;
