@@ -19,10 +19,10 @@ public:
   // pass
   bsoncxx::types::b_oid
   create_a_room(const std::string &room_name,
-                const bsoncxx::types::b_oid &userId) const;
+                const bsoncxx::types::b_oid &user_id) const;
   int32_t join_a_room(const bsoncxx::types::b_oid &chat_room_id,
                       const bsoncxx::types::b_oid &user_id) const;
-  bool exit_a_room(const bsoncxx::types::b_oid &roomId);
+  bool exit_a_room(const bsoncxx::types::b_oid &chat_room_id);
 
 private:
   mongocxx::uri uri;
@@ -31,7 +31,7 @@ private:
   bsoncxx::stdx::optional<bsoncxx::document::value>
   findUser(const std::string &user_name, const std::string &password) const;
   bsoncxx::stdx::optional<bsoncxx::document::value>
-  find_a_room(const bsoncxx::types::b_oid &roomId);
+  find_a_room(const bsoncxx::types::b_oid &chat_room_id);
   mongocxx::cursor find_rooms(const std::string &room_name) const;
 };
 }; // namespace mongo_connection

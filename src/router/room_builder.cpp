@@ -14,4 +14,19 @@ crow::response Room::create_a_room(const mongo_connection::Mongo &mongo,
   res[response_key::user_id] = user_id;
   return crow::response(200, res);
 }
+
+crow::response Room::join_a_room(const mongo_connection::Mongo &mongo,
+                                 const std::string &chat_room_id,
+                                 const std::string &user_id) const {
+  bsoncxx::oid user_oid(user_id);
+  bsoncxx::oid chat_room_oid(chat_room_id);
+  bsoncxx::types::b_oid user_b_oid, chat_room_b_oid;
+  user_b_oid.value = user_oid;
+  chat_room_b_oid.value = chat_room_oid;
+
+  int32_t joined = mongo.join_a_room(chat_room_b_oid, user_b_oid);
+  crow::json::wvalue res;
+  res[response_key::status] = joined;
+  return crow::response(200, res);
+}
 } // namespace route

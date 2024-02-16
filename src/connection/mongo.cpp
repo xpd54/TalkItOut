@@ -84,12 +84,12 @@ mongocxx::cursor Mongo::find_rooms(const std::string &room_name) const {
 }
 
 bsoncxx::stdx::optional<bsoncxx::document::value>
-Mongo::find_a_room(const bsoncxx::types::b_oid &roomId) {
+Mongo::find_a_room(const bsoncxx::types::b_oid &chat_room_id) {
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection room_collction =
       create_collection(db, db_collection::rooms);
-  bsoncxx::document::value filter =
-      bsoncxx::builder::basic::make_document(kvp(room_schema::id, roomId));
+  bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
+      kvp(room_schema::id, chat_room_id));
   bsoncxx::stdx::optional<bsoncxx::document::value> room =
       room_collction.find_one(filter.view());
   return room;

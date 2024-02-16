@@ -53,6 +53,8 @@ int main(int argc, char *argv[]) {
       .methods(crow::HTTPMethod::POST)(
           [&room_builder_module, &mongo](const crow::request &req) {
             crow::json::rvalue body = crow::json::load(req.body);
+            return room_builder_module.join_a_room(mongo, body["room_id"].s(),
+                                                   body[user_schema::id].s());
           });
   app.port(18080).multithreaded().run();
 }
