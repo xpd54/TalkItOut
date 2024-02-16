@@ -49,6 +49,10 @@ int main(int argc, char *argv[]) {
         return room_builder_module.create_a_room(
             mongo, body[room_schema::room_name].s(), body[user_schema::id].s());
       });
-
+  CROW_ROUTE(app, "/join_room")
+      .methods(crow::HTTPMethod::POST)(
+          [&room_builder_module, &mongo](const crow::request &req) {
+            crow::json::rvalue body = crow::json::load(req.body);
+          });
   app.port(18080).multithreaded().run();
 }
