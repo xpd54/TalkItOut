@@ -2,6 +2,7 @@
 #include "./common/constant.hpp"
 #include "./entity/user.h"
 #include "./router/health.h"
+#include "./router/room_builder.h"
 #include "./router/signin.h"
 #include "./router/signup.h"
 #include "connection/mongo.h"
@@ -40,5 +41,14 @@ int main(int argc, char *argv[]) {
                                 body[user_schema::password].s());
             return signin_module.sing_in(mongo, user);
           });
+  route::Room room_builder_module;
+  CROW_ROUTE(app, "/create_room")
+      .methods(crow::HTTPMethod::POST)([&room_builder_module,
+                                        &mongo](const crow::request &req) {
+        crow::json::rvalue body = crow::json::load(req.body);
+        return room_builder_module.create_a_room(
+            mongo, body[room_schema::room_name].s(), body[user_schema::id].s());
+      });
+
   app.port(18080).multithreaded().run();
 }

@@ -37,6 +37,7 @@ const std::string messages("messages");
 namespace response_key {
 const std::string status("status");
 const std::string user_id("user_id");
+const std::string room_id("room_id");
 } // namespace response_key
 
 namespace response_value {
