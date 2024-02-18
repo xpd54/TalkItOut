@@ -73,7 +73,7 @@ Mongo::findUser(const std::string &user_name,
   return user;
 }
 
-mongocxx::cursor Mongo::find_rooms(const std::string &room_name) {
+mongocxx::cursor Mongo::find_rooms(const std::string &room_name) const {
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection room_collection =
       create_collection(db, db_collection::rooms);
@@ -84,12 +84,12 @@ mongocxx::cursor Mongo::find_rooms(const std::string &room_name) {
 }
 
 bsoncxx::stdx::optional<bsoncxx::document::value>
-Mongo::find_a_room(const bsoncxx::types::b_oid &roomId) {
+Mongo::find_a_room(const bsoncxx::types::b_oid &chat_room_id) {
   using bsoncxx::builder::basic::kvp;
   mongocxx::collection room_collction =
       create_collection(db, db_collection::rooms);
-  bsoncxx::document::value filter =
-      bsoncxx::builder::basic::make_document(kvp(room_schema::id, roomId));
+  bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(
+      kvp(room_schema::id, chat_room_id));
   bsoncxx::stdx::optional<bsoncxx::document::value> room =
       room_collction.find_one(filter.view());
   return room;
@@ -141,7 +141,7 @@ Mongo::signIn(const std::string &user_name, const std::string &password) const {
 
 bsoncxx::types::b_oid
 Mongo::create_a_room(const std::string &room_name,
-                     const bsoncxx::types::b_oid &user_id) {
+                     const bsoncxx::types::b_oid &user_id) const {
   using bsoncxx::builder::basic::document;
   using bsoncxx::builder::basic::kvp;
   mongocxx::cursor rooms = find_rooms(room_name);
@@ -178,18 +178,33 @@ Mongo::create_a_room(const std::string &room_name,
 }
 
 int32_t Mongo::join_a_room(const bsoncxx::types::b_oid &chat_room_id,
-                           const bsoncxx::types::b_oid &user_id) {
+                           const bsoncxx::types::b_oid &user_id) const {
   mongocxx::collection user_collection =
       create_collection(db, db_collection::users);
+  mongocxx::collection chat_room_collection =
+      create_collection(db, db_collection::rooms);
   using bsoncxx::builder::basic::kvp;
+  using bsoncxx::builder::basic::make_array;
   using bsoncxx::builder::basic::make_document;
-  // update users chat_rooms list
-  bsoncxx::stdx::optional<mongocxx::result::update> update =
+  // update users in chat_rooms list, only if it doesn't exist.
+  bsoncxx::stdx::optional<mongocxx::result::update> user_update =
       user_collection.update_one(
           make_document(kvp(user_schema::id, user_id)),
-          make_document(kvp("$push", make_document(kvp(user_schema::chat_rooms,
-                                                       chat_room_id)))));
-  return update->matched_count();
+          make_document(kvp(
+              "$addToSet",
+              make_document(kvp(
+                  user_schema::chat_rooms,
+                  make_document(kvp("$each", make_array(chat_room_id))))))));
+  // add user_id to members list in room
+  bsoncxx::stdx::optional<mongocxx::result::update> chat_room_update =
+      chat_room_collection.update_one(
+          make_document(kvp(room_schema::id, chat_room_id)),
+          make_document(
+              kvp("$addToSet",
+                  make_document(
+                      kvp(room_schema::members,
+                          make_document(kvp("$each", make_array(user_id))))))));
+  return chat_room_update->matched_count();
 }
 bool exit_a_room(const bsoncxx::types::b_oid &userId) { return true; }
 

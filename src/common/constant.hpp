@@ -37,9 +37,18 @@ const std::string messages("messages");
 namespace response_key {
 const std::string status("status");
 const std::string user_id("user_id");
+const std::string room_id("room_id");
 } // namespace response_key
 
 namespace response_value {
 const std::string success("success");
 const std::string not_found("not_found");
 } // namespace response_value
+
+namespace request_key {
+const std::string chat_room_id("chat_room_id");
+const std::string chat_room_name("chat_room_name");
+const std::string user_id("user_id");
+const std::string user_name("user_name");
+const std::string password("password");
+} // namespace request_key
