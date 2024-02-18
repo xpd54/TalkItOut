@@ -181,15 +181,23 @@ int32_t Mongo::join_a_room(const bsoncxx::types::b_oid &chat_room_id,
                            const bsoncxx::types::b_oid &user_id) const {
   mongocxx::collection user_collection =
       create_collection(db, db_collection::users);
+  mongocxx::collection chat_room_collection =
+      create_collection(db, db_collection::rooms);
   using bsoncxx::builder::basic::kvp;
   using bsoncxx::builder::basic::make_document;
   // update users chat_rooms list
-  bsoncxx::stdx::optional<mongocxx::result::update> update =
+  bsoncxx::stdx::optional<mongocxx::result::update> user_update =
       user_collection.update_one(
           make_document(kvp(user_schema::id, user_id)),
           make_document(kvp("$push", make_document(kvp(user_schema::chat_rooms,
                                                        chat_room_id)))));
-  return update->matched_count();
+  // add user_id to members list in room
+  bsoncxx::stdx::optional<mongocxx::result::update> chat_room_update =
+      chat_room_collection.update_one(
+          make_document(kvp(room_schema::id, chat_room_id)),
+          make_document(
+              kvp("$push", make_document(kvp(room_schema::members, user_id)))));
+  return chat_room_update->matched_count();
 }
 bool exit_a_room(const bsoncxx::types::b_oid &userId) { return true; }
 
