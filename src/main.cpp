@@ -8,55 +8,45 @@
 #include "connection/mongo.h"
 #include <iostream>
 int main(int argc, char *argv[]) {
-  // The mongocxx::instance constructor initialize the driver:
-  // it must be created before using the driver and
-  // must remain alive for as long as the driver is in use.
-  mongocxx::instance inst{};
-  mongo_connection::Mongo mongo;
-  mongo.connect();
+    // The mongocxx::instance constructor initialize the driver:
+    // it must be created before using the driver and
+    // must remain alive for as long as the driver is in use.
+    mongocxx::instance inst{};
+    mongo_connection::Mongo mongo;
+    mongo.connect();
 
-  crow::SimpleApp app;
+    crow::SimpleApp app;
 
-  route::Health health;
-  /*Capture of lambdas is by reference avoid copy of object*/
-  CROW_ROUTE(app, "/health")
-  ([&health, &mongo]() { return health.health_check(mongo); });
+    route::Health health;
+    /*Capture of lambdas is by reference avoid copy of object*/
+    CROW_ROUTE(app, "/health")
+    ([&health, &mongo]() { return health.health_check(mongo); });
 
-  route::Signup signup_module;
-  CROW_ROUTE(app, "/signup")
-      .methods(crow::HTTPMethod::Post)(
-          [&signup_module, &mongo](const crow::request &req) {
-            crow::json::rvalue body = crow::json::load(req.body);
-            chat_box::User user(body[request_key::user_name].s(),
-                                body[request_key::password].s());
-            return signup_module.sign_up(mongo, user);
-          });
+    route::Signup signup_module;
+    CROW_ROUTE(app, "/signup").methods(crow::HTTPMethod::Post)([&signup_module, &mongo](const crow::request &req) {
+        crow::json::rvalue body = crow::json::load(req.body);
+        chat_box::User user(body[request_key::user_name].s(), body[request_key::password].s());
+        return signup_module.sign_up(mongo, user);
+    });
 
-  route::Signin signin_module;
-  CROW_ROUTE(app, "/signin")
-      .methods(crow::HTTPMethod::POST)(
-          [&signin_module, &mongo](const crow::request &req) {
+    route::Signin signin_module;
+    CROW_ROUTE(app, "/signin").methods(crow::HTTPMethod::POST)([&signin_module, &mongo](const crow::request &req) {
+        crow::json::rvalue body = crow::json::load(req.body);
+        chat_box::User user(body[request_key::user_name].s(), body[request_key::password].s());
+        return signin_module.sing_in(mongo, user);
+    });
+    route::Room room_builder_module;
+    CROW_ROUTE(app, "/create_room")
+        .methods(crow::HTTPMethod::POST)([&room_builder_module, &mongo](const crow::request &req) {
             crow::json::rvalue body = crow::json::load(req.body);
-            chat_box::User user(body[request_key::user_name].s(),
-                                body[request_key::password].s());
-            return signin_module.sing_in(mongo, user);
-          });
-  route::Room room_builder_module;
-  CROW_ROUTE(app, "/create_room")
-      .methods(crow::HTTPMethod::POST)(
-          [&room_builder_module, &mongo](const crow::request &req) {
+            return room_builder_module.create_a_room(mongo, body[request_key::chat_room_name].s(),
+                                                     body[request_key::user_id].s());
+        });
+    CROW_ROUTE(app, "/join_room")
+        .methods(crow::HTTPMethod::POST)([&room_builder_module, &mongo](const crow::request &req) {
             crow::json::rvalue body = crow::json::load(req.body);
-            return room_builder_module.create_a_room(
-                mongo, body[request_key::chat_room_name].s(),
-                body[request_key::user_id].s());
-          });
-  CROW_ROUTE(app, "/join_room")
-      .methods(crow::HTTPMethod::POST)(
-          [&room_builder_module, &mongo](const crow::request &req) {
-            crow::json::rvalue body = crow::json::load(req.body);
-            return room_builder_module.join_a_room(
-                mongo, body[request_key::chat_room_id].s(),
-                body[request_key::user_id].s());
-          });
-  app.port(18080).multithreaded().run();
+            return room_builder_module.join_a_room(mongo, body[request_key::chat_room_id].s(),
+                                                   body[request_key::user_id].s());
+        });
+    app.port(18080).multithreaded().run();
 }
