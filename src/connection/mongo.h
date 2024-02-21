@@ -23,7 +23,9 @@ class Mongo {
     bsoncxx::types::b_oid add_message_to_room(const std::string &payload, const bsoncxx::types::b_oid &user_id,
                                               const bsoncxx::types::b_oid &chat_room_id) const;
 
-    bsoncxx::types::b_array get_all_message_from_room(const bsoncxx::types::b_oid &chat_room_id) const;
+    bsoncxx::types::b_array get_all_messages_for_room(const bsoncxx::types::b_oid &chat_room_id) const;
+
+    bsoncxx::types::b_array get_all_rooms_for_user(const bsoncxx::types::b_oid &user_id) const;
 
   private:
     mongocxx::uri uri;
