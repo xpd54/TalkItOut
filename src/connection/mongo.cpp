@@ -5,6 +5,10 @@
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/types.hpp>
 #include <iostream>
+using bsoncxx::builder::basic::kvp;
+using bsoncxx::builder::basic::make_array;
+using bsoncxx::builder::basic::make_document;
+using bsoncxx::types::b_timestamp;
 namespace mongo_connection {
 
 Mongo::Mongo() {}
@@ -28,10 +32,7 @@ mongocxx::collection create_collection(const mongocxx::database &db, const std::
 bool setVersion(const mongocxx::database &db) {
     if (!db.has_collection(db_collection::version)) {
         mongocxx::collection version_collection = db.collection(db_collection::version);
-
-        bsoncxx::document::value version =
-            bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp(db_collection::appVersion, 5));
-
+        bsoncxx::document::value version = bsoncxx::builder::basic::make_document(kvp(db_collection::appVersion, 5));
         bsoncxx::stdx::optional<mongocxx::result::insert_one> result = version_collection.insert_one(version.view());
         std::int32_t count = result->result().inserted_count();
         return count > 0;
@@ -54,8 +55,6 @@ bool Mongo::checkConnection() const {
 
 bsoncxx::stdx::optional<bsoncxx::document::value> Mongo::findUser(const std::string &user_name,
                                                                   const std::string &password) const {
-
-    using bsoncxx::builder::basic::kvp;
     mongocxx::collection user_collection = create_collection(db, db_collection::users);
     // check for user if exists before signup
     bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(kvp(user_schema::user_name, user_name));
@@ -65,7 +64,6 @@ bsoncxx::stdx::optional<bsoncxx::document::value> Mongo::findUser(const std::str
 }
 
 mongocxx::cursor Mongo::find_rooms(const std::string &room_name) const {
-    using bsoncxx::builder::basic::kvp;
     mongocxx::collection room_collection = create_collection(db, db_collection::rooms);
     bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(kvp(room_schema::room_name, room_name));
     mongocxx::cursor room = room_collection.find(filter.view());
@@ -73,7 +71,6 @@ mongocxx::cursor Mongo::find_rooms(const std::string &room_name) const {
 }
 
 bsoncxx::stdx::optional<bsoncxx::document::value> Mongo::find_a_room(const bsoncxx::types::b_oid &chat_room_id) {
-    using bsoncxx::builder::basic::kvp;
     mongocxx::collection room_collction = create_collection(db, db_collection::rooms);
     bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(kvp(room_schema::id, chat_room_id));
     bsoncxx::stdx::optional<bsoncxx::document::value> room = room_collction.find_one(filter.view());
@@ -81,8 +78,6 @@ bsoncxx::stdx::optional<bsoncxx::document::value> Mongo::find_a_room(const bsonc
 }
 
 bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name, const std::string &password) const {
-    using bsoncxx::builder::basic::document;
-    using bsoncxx::builder::basic::kvp;
     mongocxx::collection user_collection = create_collection(db, db_collection::users);
     // check for user if exists before signup
     bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(kvp(user_schema::user_name, user_name));
@@ -95,7 +90,7 @@ bsoncxx::types::b_oid Mongo::signUp(const std::string &user_name, const std::str
     }
 
     std::chrono::system_clock::time_point register_time = std::chrono::system_clock::now();
-    document doc = document{};
+    bsoncxx::builder::basic::document doc = {};
     doc.append(kvp(user_schema::user_name, user_name));
     doc.append(kvp(user_schema::password, password));
     doc.append(kvp(user_schema::timestamp, bsoncxx::types::b_date(register_time)));
@@ -112,13 +107,10 @@ bsoncxx::stdx::optional<bsoncxx::types::b_oid> Mongo::signIn(const std::string &
         bsoncxx::types::b_oid current_user_id = view[user_schema::id].get_oid();
         return current_user_id;
     }
-
     return bsoncxx::stdx::nullopt;
 }
 
 bsoncxx::types::b_oid Mongo::create_a_room(const std::string &room_name, const bsoncxx::types::b_oid &user_id) const {
-    using bsoncxx::builder::basic::document;
-    using bsoncxx::builder::basic::kvp;
     mongocxx::cursor rooms = find_rooms(room_name);
     int32_t name_version = 0;
     if (rooms.begin() != rooms.end()) {
@@ -129,7 +121,7 @@ bsoncxx::types::b_oid Mongo::create_a_room(const std::string &room_name, const b
         }
     }
 
-    document doc = {};
+    bsoncxx::builder::basic::document doc = {};
     bsoncxx::builder::basic::array users;
     users.append(user_id);
     doc.append(kvp(room_schema::room_name, room_name));
@@ -153,7 +145,7 @@ bsoncxx::types::b_oid Mongo::create_a_room(const std::string &room_name, const b
 int32_t Mongo::join_a_room(const bsoncxx::types::b_oid &chat_room_id, const bsoncxx::types::b_oid &user_id) const {
     mongocxx::collection user_collection = create_collection(db, db_collection::users);
     mongocxx::collection chat_room_collection = create_collection(db, db_collection::rooms);
-    using bsoncxx::builder::basic::kvp;
+
     using bsoncxx::builder::basic::make_array;
     using bsoncxx::builder::basic::make_document;
     // update users in chat_rooms list, only if it doesn't exist.
@@ -177,10 +169,7 @@ int32_t Mongo::add_message_to_room(const std::string &payload, const bsoncxx::ty
                                    const bsoncxx::types::b_oid &chat_room_id) const {
     mongocxx::collection user_collection = create_collection(db, db_collection::users);
     mongocxx::collection chat_room_collection = create_collection(db, db_collection::rooms);
-    using bsoncxx::builder::basic::kvp;
-    using bsoncxx::builder::basic::make_array;
-    using bsoncxx::builder::basic::make_document;
-    using bsoncxx::types::b_timestamp;
+
     std::chrono::system_clock::time_point created_at = std::chrono::system_clock::now();
     bsoncxx::document::view_or_value message =
         make_document(kvp(message_schema::sender, user_id), kvp(message_schema::payload, payload),
@@ -189,8 +178,21 @@ int32_t Mongo::add_message_to_room(const std::string &payload, const bsoncxx::ty
     bsoncxx::document::view_or_value update_query = make_document(
         kvp("$addToSet", make_document(kvp(room_schema::messages, make_document(kvp("$each", make_array(message)))))));
     bsoncxx::stdx::optional<mongocxx::result::update> chat_room_update =
-        chat_room_collection.update_one(filter, update_query);
+        chat_room_collection.update_one(filter.view(), update_query.view());
     return chat_room_update->matched_count();
+}
+
+bsoncxx::types::b_array Mongo::get_all_messages_for_room(const bsoncxx::types::b_oid &chat_room_id) const {
+    mongocxx::collection chat_room_collection = create_collection(db, db_collection::rooms);
+    bsoncxx::document::view_or_value filter = make_document(kvp(room_schema::id, chat_room_id));
+    mongocxx::options::find options;
+    bsoncxx::document::view_or_value projection = make_document(kvp(room_schema::messages, 1));
+    bsoncxx::stdx::optional<bsoncxx::document::value> chat_room =
+        chat_room_collection.find_one(filter.view(), options.projection(projection.view()));
+    if (chat_room) {
+        bsoncxx::document::view chat_room_view = chat_room->view();
+        bsoncxx::types::b_array messages = chat_room_view[room_schema::messages].get_array();
+    }
 }
 
 }; // namespace mongo_connection
