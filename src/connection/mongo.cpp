@@ -191,7 +191,8 @@ bsoncxx::types::b_array Mongo::get_all_messages_for_room(const bsoncxx::types::b
         chat_room_collection.find_one(filter.view(), options.projection(projection.view()));
     if (chat_room) {
         bsoncxx::document::view chat_room_view = chat_room->view();
-        bsoncxx::types::b_array messages = chat_room_view[room_schema::messages].get_array();
+        bsoncxx::array::view messages = chat_room_view[room_schema::messages].get_array().value;
+        std::cout << "------------->\n" << messages.length() << "\n";
     }
 }
 
