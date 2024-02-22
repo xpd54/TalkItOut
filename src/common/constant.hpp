@@ -34,6 +34,12 @@ const std::string members("members");
 const std::string messages("messages");
 } // namespace room_schema
 
+namespace message_schema {
+const std::string sender("sender");
+const std::string created_at("created_at");
+const std::string payload("paylaod");
+} // namespace message_schema
+
 namespace response_key {
 const std::string status("status");
 const std::string user_id("user_id");

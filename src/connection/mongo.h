@@ -20,8 +20,8 @@ class Mongo {
     int32_t join_a_room(const bsoncxx::types::b_oid &chat_room_id, const bsoncxx::types::b_oid &user_id) const;
     bool exit_a_room(const bsoncxx::types::b_oid &chat_room_id);
 
-    bsoncxx::types::b_oid add_message_to_room(const std::string &payload, const bsoncxx::types::b_oid &user_id,
-                                              const bsoncxx::types::b_oid &chat_room_id) const;
+    int32_t add_message_to_room(const std::string &payload, const bsoncxx::types::b_oid &user_id,
+                                const bsoncxx::types::b_oid &chat_room_id) const;
 
     bsoncxx::types::b_array get_all_messages_for_room(const bsoncxx::types::b_oid &chat_room_id) const;
 

@@ -15,6 +15,14 @@ int main(int argc, char *argv[]) {
     mongo_connection::Mongo mongo;
     mongo.connect();
 
+    bsoncxx::oid user_oid("65c20d844ed68618c605d7e1");
+    bsoncxx::oid chat_room_oid("659dfb08095face36b0411c1");
+    bsoncxx::types::b_oid user_id;
+    user_id.value = user_oid;
+    bsoncxx::types::b_oid chat_room_id;
+    chat_room_id.value = chat_room_oid;
+
+    const int32_t count = mongo.add_message_to_room("Hello World", user_id, chat_room_id);
     crow::SimpleApp app;
 
     route::Health health;

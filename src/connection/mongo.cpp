@@ -170,4 +170,27 @@ int32_t Mongo::join_a_room(const bsoncxx::types::b_oid &chat_room_id, const bson
 }
 bool exit_a_room(const bsoncxx::types::b_oid &userId) { return true; }
 
+/*
+Sending message to a room.
+*/
+int32_t Mongo::add_message_to_room(const std::string &payload, const bsoncxx::types::b_oid &user_id,
+                                   const bsoncxx::types::b_oid &chat_room_id) const {
+    mongocxx::collection user_collection = create_collection(db, db_collection::users);
+    mongocxx::collection chat_room_collection = create_collection(db, db_collection::rooms);
+    using bsoncxx::builder::basic::kvp;
+    using bsoncxx::builder::basic::make_array;
+    using bsoncxx::builder::basic::make_document;
+    using bsoncxx::types::b_timestamp;
+    std::chrono::system_clock::time_point created_at = std::chrono::system_clock::now();
+    bsoncxx::document::view_or_value message =
+        make_document(kvp(message_schema::sender, user_id), kvp(message_schema::payload, payload),
+                      kvp(message_schema::created_at, bsoncxx::types::b_date(created_at)));
+    bsoncxx::document::view_or_value filter = make_document(kvp(room_schema::id, chat_room_id));
+    bsoncxx::document::view_or_value update_query = make_document(
+        kvp("$addToSet", make_document(kvp(room_schema::messages, make_document(kvp("$each", make_array(message)))))));
+    bsoncxx::stdx::optional<mongocxx::result::update> chat_room_update =
+        chat_room_collection.update_one(filter, update_query);
+    return chat_room_update->matched_count();
+}
+
 }; // namespace mongo_connection
