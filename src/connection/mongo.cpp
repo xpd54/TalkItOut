@@ -3,7 +3,6 @@
 #include <bsoncxx/builder/basic/array.hpp>
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/json.hpp>
-#include <bsoncxx/types.hpp>
 #include <iostream>
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_array;
@@ -182,7 +181,8 @@ int32_t Mongo::add_message_to_room(const std::string &payload, const bsoncxx::ty
     return chat_room_update->matched_count();
 }
 
-bsoncxx::types::b_array Mongo::get_all_messages_for_room(const bsoncxx::types::b_oid &chat_room_id) const {
+bsoncxx::stdx::optional<bsoncxx::types::b_array>
+Mongo::get_all_messages_for_room(const bsoncxx::types::b_oid &chat_room_id) const {
     mongocxx::collection chat_room_collection = create_collection(db, db_collection::rooms);
     bsoncxx::document::view_or_value filter = make_document(kvp(room_schema::id, chat_room_id));
     mongocxx::options::find options;
@@ -190,11 +190,15 @@ bsoncxx::types::b_array Mongo::get_all_messages_for_room(const bsoncxx::types::b
     bsoncxx::stdx::optional<bsoncxx::document::value> chat_room = chat_room_collection.find_one(filter.view());
 
     if (chat_room) {
-        bsoncxx::document::view chat_room_view = *chat_room;
-        auto messages = chat_room_view[room_schema::messages].get_array().value;
+        bsoncxx::document::value chat_room_view = chat_room.value();
+        bsoncxx::types::b_array messages = chat_room_view[room_schema::messages].get_array();
+
+        // to convert messages to an array and access value to
         std::string array_json = bsoncxx::to_json(messages);
-        std::cout << "Array JSON: " << array_json << std::endl;
+        std::cout << "Array JSON: " << array_json << "\n";
+        return messages;
     }
+    return bsoncxx::stdx::nullopt;
 }
 
 }; // namespace mongo_connection

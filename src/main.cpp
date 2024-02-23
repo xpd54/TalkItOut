@@ -6,6 +6,7 @@
 #include "./router/signin.h"
 #include "./router/signup.h"
 #include "connection/mongo.h"
+#include <bsoncxx/json.hpp>
 #include <iostream>
 int main(int argc, char *argv[]) {
     // The mongocxx::instance constructor initialize the driver:
@@ -21,7 +22,9 @@ int main(int argc, char *argv[]) {
     user_id.value = user_oid;
     bsoncxx::types::b_oid chat_room_id;
     chat_room_id.value = chat_room_oid;
-    mongo.get_all_messages_for_room(chat_room_id);
+    bsoncxx::stdx::optional<bsoncxx::types::b_array> messages = mongo.get_all_messages_for_room(chat_room_id);
+    if (messages) {
+    }
 
     const int32_t count = mongo.add_message_to_room("Hello C++", user_id, chat_room_id);
     crow::SimpleApp app;
