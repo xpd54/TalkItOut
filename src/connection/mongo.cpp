@@ -187,12 +187,13 @@ bsoncxx::types::b_array Mongo::get_all_messages_for_room(const bsoncxx::types::b
     bsoncxx::document::view_or_value filter = make_document(kvp(room_schema::id, chat_room_id));
     mongocxx::options::find options;
     bsoncxx::document::view_or_value projection = make_document(kvp(room_schema::messages, 1));
-    bsoncxx::stdx::optional<bsoncxx::document::value> chat_room =
-        chat_room_collection.find_one(filter.view(), options.projection(projection.view()));
+    bsoncxx::stdx::optional<bsoncxx::document::value> chat_room = chat_room_collection.find_one(filter.view());
+
     if (chat_room) {
-        bsoncxx::document::view chat_room_view = chat_room->view();
-        bsoncxx::array::view messages = chat_room_view[room_schema::messages].get_array().value;
-        std::cout << "------------->\n" << messages.length() << "\n";
+        bsoncxx::document::view chat_room_view = *chat_room;
+        auto messages = chat_room_view[room_schema::messages].get_array().value;
+        std::string array_json = bsoncxx::to_json(messages);
+        std::cout << "Array JSON: " << array_json << std::endl;
     }
 }
 
