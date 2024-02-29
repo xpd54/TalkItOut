@@ -66,5 +66,6 @@ int main(int argc, char *argv[]) {
             return room_builder_module.join_a_room(mongo, body[request_key::chat_room_id].s(),
                                                    body[request_key::user_id].s());
         });
+    
     app.port(18080).multithreaded().run();
 }
