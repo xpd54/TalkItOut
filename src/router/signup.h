@@ -4,11 +4,10 @@
 #include "../entity/user.h"
 namespace route {
 class Signup {
-private:
-  /* data */
-public:
-  crow::response sign_up(const mongo_connection::Mongo &mongo,
-                         const chat_box::User &user) const;
+  private:
+    /* data */
+  public:
+    crow::response sign_up(const mongo_connection::Mongo &mongo, const chat_box::User &user) const;
 };
 
 } // namespace route
