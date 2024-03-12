@@ -1,6 +1,7 @@
 #include "../include/crow.h"
 #include "./common/constant.hpp"
 #include "./entity/user.h"
+#include "./router/chat_activity.h"
 #include "./router/health.h"
 #include "./router/room_builder.h"
 #include "./router/signin.h"
@@ -66,6 +67,13 @@ int main(int argc, char *argv[]) {
             return room_builder_module.join_a_room(mongo, body[request_key::chat_room_id].s(),
                                                    body[request_key::user_id].s());
         });
-    
+    route::Chat chat_activity_module;
+    CROW_ROUTE(app, "/send_message")
+        .methods(crow::HTTPMethod::POST)([&chat_activity_module, &mongo](const crow::request &req) {
+            crow::json::rvalue body = crow::json::load(req.body);
+            return chat_activity_module.send_message_to_room(mongo, body[request_key::message_payload].s(),
+                                                             body[request_key::user_id].s(),
+                                                             body[request_key::chat_room_id].s());
+        });
     app.port(18080).multithreaded().run();
 }

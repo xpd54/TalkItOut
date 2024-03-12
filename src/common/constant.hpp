@@ -44,6 +44,7 @@ namespace response_key {
 const std::string status("status");
 const std::string user_id("user_id");
 const std::string room_id("room_id");
+const std::string messages_sent("messages_sent");
 } // namespace response_key
 
 namespace response_value {
@@ -57,4 +58,5 @@ const std::string chat_room_name("chat_room_name");
 const std::string user_id("user_id");
 const std::string user_name("user_name");
 const std::string password("password");
+const std::string message_payload("message_payload");
 } // namespace request_key
