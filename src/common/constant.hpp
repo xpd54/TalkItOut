@@ -45,6 +45,8 @@ const std::string status("status");
 const std::string user_id("user_id");
 const std::string room_id("room_id");
 const std::string messages_sent("messages_sent");
+const std::string message("message");
+const std::string message_count("message_count");
 } // namespace response_key
 
 namespace response_value {

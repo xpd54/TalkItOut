@@ -75,5 +75,10 @@ int main(int argc, char *argv[]) {
                                                              body[request_key::user_id].s(),
                                                              body[request_key::chat_room_id].s());
         });
+    CROW_ROUTE(app, "/get_all_messages")
+        .methods(crow::HTTPMethod::GET)([&chat_activity_module, &mongo](const crow::request &req) {
+            std::string chat_room_id = req.url_params.get(request_key::chat_room_id);
+            return chat_activity_module.get_all_messages_from_room(mongo, chat_room_id);
+        });
     app.port(18080).multithreaded().run();
 }
