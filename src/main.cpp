@@ -1,6 +1,7 @@
 #include "../include/crow.h"
 #include "./common/constant.hpp"
 #include "./entity/user.h"
+#include "./router/chat_activity.h"
 #include "./router/health.h"
 #include "./router/room_builder.h"
 #include "./router/signin.h"
@@ -65,6 +66,24 @@ int main(int argc, char *argv[]) {
             crow::json::rvalue body = crow::json::load(req.body);
             return room_builder_module.join_a_room(mongo, body[request_key::chat_room_id].s(),
                                                    body[request_key::user_id].s());
+        });
+    route::Chat chat_activity_module;
+    CROW_ROUTE(app, "/send_message")
+        .methods(crow::HTTPMethod::POST)([&chat_activity_module, &mongo](const crow::request &req) {
+            crow::json::rvalue body = crow::json::load(req.body);
+            return chat_activity_module.send_message_to_room(mongo, body[request_key::message_payload].s(),
+                                                             body[request_key::user_id].s(),
+                                                             body[request_key::chat_room_id].s());
+        });
+    CROW_ROUTE(app, "/get_all_messages")
+        .methods(crow::HTTPMethod::GET)([&chat_activity_module, &mongo](const crow::request &req) {
+            std::string chat_room_id = req.url_params.get(request_key::chat_room_id);
+            return chat_activity_module.get_all_messages_from_room(mongo, chat_room_id);
+        });
+    CROW_ROUTE(app, "/get_all_chat_rooms")
+        .methods(crow::HTTPMethod::GET)([&chat_activity_module, &mongo](const crow::request &req) {
+            std::string user_id = req.url_params.get(request_key::user_id);
+            return chat_activity_module.get_all_rooms_for_user(mongo, user_id);
         });
     app.port(18080).multithreaded().run();
 }
