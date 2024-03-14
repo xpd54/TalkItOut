@@ -201,12 +201,15 @@ Mongo::get_all_messages_for_room(const bsoncxx::types::b_oid &chat_room_id) cons
     return bsoncxx::stdx::nullopt;
 }
 
-bsoncxx::stdx::optional<bsoncxx::types::b_array> get_all_rooms_for_user(const bsoncxx::types::b_oid &user_id) const {
+bsoncxx::stdx::optional<bsoncxx::types::b_array>
+Mongo::get_all_rooms_for_user(const bsoncxx::types::b_oid &user_id) const {
     mongocxx::collection user_collection = create_collection(db, db_collection::users);
     bsoncxx::document::value filter = bsoncxx::builder::basic::make_document(kvp(user_schema::id, user_id));
     bsoncxx::stdx::optional<bsoncxx::document::value> user = user_collection.find_one(filter.view());
     if (user) {
-        
+        bsoncxx::document::value user_view = user.value();
+        bsoncxx::types::b_array chat_rooms = user_view[user_schema::chat_rooms].get_array();
+        return chat_rooms;
     }
     return bsoncxx::stdx::nullopt;
 }

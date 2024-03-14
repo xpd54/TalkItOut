@@ -47,6 +47,7 @@ const std::string room_id("room_id");
 const std::string messages_sent("messages_sent");
 const std::string message("message");
 const std::string message_count("message_count");
+const std::string chat_rooms("chat_rooms");
 } // namespace response_key
 
 namespace response_value {
