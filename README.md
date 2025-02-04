@@ -24,7 +24,7 @@ TalkItOut is a CRUD RESTful API server built using the mongo-cxx-driver and BSON
 ##### running on docker
 
 1. run mongodb `cd mongodb && docker compose up` in one terminal
-2. update your local ip address or if using atlas-database use uri. [here]()
+2. update your local ip address or if using atlas-database use uri. [here](https://github.com/xpd54/TalkItOut/blob/9e594c195df34d57d5a5298e79d69e39e8374564/docker-compose.yml#L9)
 3. `docker compose up` and make get request to `http://0.0.0.0:18080/health` to see if it's up.
 
 #### APIs
