@@ -7,3 +7,4 @@ services:
       - "18080:18080"
     environment:
         MONGO_URI: mongodb://192.168.1.237:27017/
+        #update your mongodb ip address here
