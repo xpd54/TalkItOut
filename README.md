@@ -1,6 +1,6 @@
 # Talk It Out
 
-TalkItOut is a CRUD RESTful API built using the mongo-cxx-driver and BSON. This application allows users to interact with a chat system via api, enabling functionalities such as signing up, signing in, creating rooms, sending messages, and retrieving messages.
+TalkItOut is a CRUD RESTful API server built using the mongo-cxx-driver and BSON. This application allows users to interact with a chat system via api, enabling functionalities such as signing up, signing in, creating rooms, sending messages, and retrieving messages.
 
 ## Table of Contents
 
@@ -13,7 +13,7 @@ TalkItOut is a CRUD RESTful API built using the mongo-cxx-driver and BSON. This 
 #### Dependency
 
 1. [crow](https://github.com/CrowCpp/Crow) header only library already included.
-2. [Mongdb](https://github.com/mongodb/mongo-cxx-driver) need to be installed as internal dependency.
+2. [Mongdb](https://github.com/mongodb/mongo-cxx-driver) needs to be installed as an internal dependency.
 
 #### APIs
 
