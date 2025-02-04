@@ -27,6 +27,14 @@ TalkItOut is a CRUD RESTful API server built using the mongo-cxx-driver and BSON
 2. update your local ip address or if using atlas-database use uri. [here](https://github.com/xpd54/TalkItOut/blob/9e594c195df34d57d5a5298e79d69e39e8374564/docker-compose.yml#L9)
 3. `docker compose up` and make get request to `http://0.0.0.0:18080/health` to see if it's up.
 
+```bash
+talkitout-app-1  | (2025-02-04 11:17:21) [INFO    ] Crow/master server is running at http://0.0.0.0:18080 using 4 threads
+talkitout-app-1  | (2025-02-04 11:17:21) [INFO    ] Call `app.loglevel(crow::LogLevel::Warning)` to hide Info level logs.
+talkitout-app-1  | (2025-02-04 11:17:44) [INFO    ] Request: 192.168.192.1:38464 0x113e710 HTTP/1.1 GET /health
+talkitout-app-1  | (2025-02-04 11:17:44) [INFO    ] Response: 0x113e710 /health 200 0
+talkitout-app-1  | Current Version is set as 5
+```
+
 #### APIs
 
 ###### Health Check
