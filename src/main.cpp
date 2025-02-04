@@ -42,46 +42,55 @@ int main(int argc, char *argv[]) {
     ([&health, &mongo]() { return health.health_check(mongo); });
 
     route::Signup signup_module;
-    CROW_ROUTE(app, "/signup").methods(crow::HTTPMethod::Post)([&signup_module, &mongo](const crow::request &req) {
-        crow::json::rvalue body = crow::json::load(req.body);
-        chat_box::User user(body[request_key::user_name].s(), body[request_key::password].s());
-        return signup_module.sign_up(mongo, user);
-    });
+    CROW_ROUTE(app, "/signup")
+        .methods(crow::HTTPMethod::Post) // nowrap
+        ([&signup_module, &mongo](const crow::request &req) {
+            crow::json::rvalue body = crow::json::load(req.body);
+            chat_box::User user(body[request_key::user_name].s(), body[request_key::password].s());
+            return signup_module.sign_up(mongo, user);
+        });
 
     route::Signin signin_module;
-    CROW_ROUTE(app, "/signin").methods(crow::HTTPMethod::POST)([&signin_module, &mongo](const crow::request &req) {
-        crow::json::rvalue body = crow::json::load(req.body);
-        chat_box::User user(body[request_key::user_name].s(), body[request_key::password].s());
-        return signin_module.sing_in(mongo, user);
-    });
+    CROW_ROUTE(app, "/signin")
+        .methods(crow::HTTPMethod::POST) // nowrap
+        ([&signin_module, &mongo](const crow::request &req) {
+            crow::json::rvalue body = crow::json::load(req.body);
+            chat_box::User user(body[request_key::user_name].s(), body[request_key::password].s());
+            return signin_module.sing_in(mongo, user);
+        });
     route::Room room_builder_module;
     CROW_ROUTE(app, "/create_room")
-        .methods(crow::HTTPMethod::POST)([&room_builder_module, &mongo](const crow::request &req) {
+        .methods(crow::HTTPMethod::POST) // nowrap
+        ([&room_builder_module, &mongo](const crow::request &req) {
             crow::json::rvalue body = crow::json::load(req.body);
             return room_builder_module.create_a_room(mongo, body[request_key::chat_room_name].s(),
                                                      body[request_key::user_id].s());
         });
     CROW_ROUTE(app, "/join_room")
-        .methods(crow::HTTPMethod::POST)([&room_builder_module, &mongo](const crow::request &req) {
+        .methods(crow::HTTPMethod::POST) // nowrap
+        ([&room_builder_module, &mongo](const crow::request &req) {
             crow::json::rvalue body = crow::json::load(req.body);
             return room_builder_module.join_a_room(mongo, body[request_key::chat_room_id].s(),
                                                    body[request_key::user_id].s());
         });
     route::Chat chat_activity_module;
     CROW_ROUTE(app, "/send_message")
-        .methods(crow::HTTPMethod::POST)([&chat_activity_module, &mongo](const crow::request &req) {
+        .methods(crow::HTTPMethod::POST) // nowrap
+        ([&chat_activity_module, &mongo](const crow::request &req) {
             crow::json::rvalue body = crow::json::load(req.body);
             return chat_activity_module.send_message_to_room(mongo, body[request_key::message_payload].s(),
                                                              body[request_key::user_id].s(),
                                                              body[request_key::chat_room_id].s());
         });
     CROW_ROUTE(app, "/get_all_messages")
-        .methods(crow::HTTPMethod::GET)([&chat_activity_module, &mongo](const crow::request &req) {
+        .methods(crow::HTTPMethod::GET) // nowrap
+        ([&chat_activity_module, &mongo](const crow::request &req) {
             std::string chat_room_id = req.url_params.get(request_key::chat_room_id);
             return chat_activity_module.get_all_messages_from_room(mongo, chat_room_id);
         });
     CROW_ROUTE(app, "/get_all_chat_rooms")
-        .methods(crow::HTTPMethod::GET)([&chat_activity_module, &mongo](const crow::request &req) {
+        .methods(crow::HTTPMethod::GET) // nowrap
+        ([&chat_activity_module, &mongo](const crow::request &req) {
             std::string user_id = req.url_params.get(request_key::user_id);
             return chat_activity_module.get_all_rooms_for_user(mongo, user_id);
         });

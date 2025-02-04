@@ -2,8 +2,10 @@
 #include "../common/constant.hpp"
 #include <bsoncxx/json.hpp>
 namespace route {
-crow::response Chat::send_message_to_room(const mongo_connection::Mongo &mongo, const std::string message,
-                                          const std::string user_id, const std::string chat_room_id) const {
+crow::response Chat::send_message_to_room(const mongo_connection::Mongo &mongo, // nowrap
+                                          const std::string message,            // nowrap
+                                          const std::string user_id,            // nowrap
+                                          const std::string chat_room_id) const {
     bsoncxx::oid user_oid(user_id);
     bsoncxx::types::b_oid user_b_oid;
     user_b_oid.value = user_oid;
@@ -17,6 +19,7 @@ crow::response Chat::send_message_to_room(const mongo_connection::Mongo &mongo, 
     res[response_key::messages_sent] = added_count;
     return crow::response(200, res);
 }
+
 crow::response Chat::get_all_messages_from_room(const mongo_connection::Mongo &mongo,
                                                 const std::string chat_room_id) const {
     bsoncxx::oid chat_room_oid(chat_room_id);
@@ -29,6 +32,7 @@ crow::response Chat::get_all_messages_from_room(const mongo_connection::Mongo &m
     res[response_key::message] = bsoncxx::to_json(message_array);
     return crow::response(200, res);
 }
+
 crow::response Chat::get_all_rooms_for_user(const mongo_connection::Mongo &mongo, const std::string user_id) const {
     bsoncxx::oid user_oid(user_id);
     bsoncxx::types::b_oid user_boid;

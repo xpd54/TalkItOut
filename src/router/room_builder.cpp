@@ -1,7 +1,8 @@
 #include "room_builder.h"
 #include "../common/constant.hpp"
 namespace route {
-crow::response Room::create_a_room(const mongo_connection::Mongo &mongo, const std::string &room_name,
+crow::response Room::create_a_room(const mongo_connection::Mongo &mongo, // nowrap
+                                   const std::string &room_name,         // nowrap
                                    const std::string &user_id) const {
     bsoncxx::oid user_oid(user_id);
     // handle error for non valud string for oid
@@ -14,7 +15,8 @@ crow::response Room::create_a_room(const mongo_connection::Mongo &mongo, const s
     return crow::response(200, res);
 }
 
-crow::response Room::join_a_room(const mongo_connection::Mongo &mongo, const std::string &chat_room_id,
+crow::response Room::join_a_room(const mongo_connection::Mongo &mongo, // nowrap
+                                 const std::string &chat_room_id,      // nowrap
                                  const std::string &user_id) const {
     bsoncxx::oid user_oid(user_id);
     bsoncxx::oid chat_room_oid(chat_room_id);
