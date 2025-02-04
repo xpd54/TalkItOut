@@ -1,11 +1,12 @@
 #pragma once
+#include <cstdlib>
 #include <string>
-#define MONGO_DB_URI "MONGO_DB_URI"
+#define MONGO_URI "MONGO_URI"
 #define DB_NAME "DB_NAME"
 
 namespace connection_constant {
-const std::string mongodbUri = "mongodb://localhost:27017";
-const std::string databaseName = "talk_it_out";
+inline const char *mongodbUri = getenv(MONGO_URI);
+const std::string databaseName = "talk-it-out";
 enum status { disconnected = 0, connected };
 } // namespace connection_constant
 

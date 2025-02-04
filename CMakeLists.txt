@@ -20,10 +20,10 @@ add_executable(${PROJECT_NAME}
 message("Architecture is ${CMAKE_SYSTEM_PROCESSOR}")
 target_include_directories(${PROJECT_NAME}
     PUBLIC
+    include/asio/include/
     include/
     /usr/local/include/mongocxx/v_noabi/ 
     /usr/local/include/bsoncxx/v_noabi/
-    /usr/local/include
     #/opt/homebrew/include/ # particular to access header on Mac Silicon 
 )
 target_link_directories(${PROJECT_NAME}
