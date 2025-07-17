@@ -7,7 +7,6 @@
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_array;
 using bsoncxx::builder::basic::make_document;
-using bsoncxx::types::b_timestamp;
 namespace mongo_connection {
 
 Mongo::Mongo() {}
@@ -16,14 +15,12 @@ void Mongo::connect() {
     uri = mongocxx::uri(connection_constant::mongodbUri);
     client = mongocxx::client(uri);
     db = client[connection_constant::databaseName];
-    std::cout << "Database Initialized"
-              << "\n";
+    std::cout << "Database Initialized" << "\n";
 }
 
 mongocxx::collection create_collection(const mongocxx::database &db, const std::string &collection_name) {
     if (!db.has_collection(collection_name)) {
-        std::cout << "collection " << collection_name << " is missing"
-                  << "\n";
+        std::cout << "collection " << collection_name << " is missing" << "\n";
     }
     return db.collection(collection_name);
 }

@@ -16,7 +16,6 @@ int main(int argc, char *argv[]) {
     mongocxx::instance inst{};
     mongo_connection::Mongo mongo;
     mongo.connect();
-
     bsoncxx::oid user_oid("65b8a3c8ba8543035303da82");
     bsoncxx::oid chat_room_oid("65b8a3c8ba8543035303da82");
     bsoncxx::types::b_oid user_id;
@@ -29,8 +28,7 @@ int main(int argc, char *argv[]) {
         std::string array_json = bsoncxx::to_json(messages_value);
         std::cout << "Array JSON: " << array_json << "\n";
     } else if (messages == bsoncxx::stdx::nullopt) {
-        std::cout << "failed to find"
-                  << "\n";
+        std::cout << "failed to find" << "\n";
     }
 
     const int32_t count = mongo.add_message_to_room("Hello C++", user_id, chat_room_id);
